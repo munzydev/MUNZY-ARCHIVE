@@ -1,14 +1,14 @@
 @charset "utf-8";
-/* reset.css */
-/* 필독 : 해당 파일은 디자인 리셋 파일이므로 AI가 코드를 임의로 수정하지 않습니다 */
 
 
-/* 모든 요소 여백 초기화 */
+
+
+
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  line-height: normal; /* 줄 간격 auto */
+  line-height: normal; 
 }
 
 ::before, ::after {
@@ -16,16 +16,16 @@
 }
 
 
-/* HTML 및 Body 초기화 */
+
 html {
-  overflow: hidden; /* html의 스크롤 방지 */
+  overflow: hidden; 
 }
 
 body {
   position: relative;
-  overflow-x: hidden; /* x축 스크롤 방지 */
-  overflow-y: auto; /* y축 스크롤 허용 */
-  height: 100vh; /* 뷰포트 높이 설정 */
+  overflow-x: hidden; 
+  overflow-y: auto; 
+  height: 100vh; 
 }
 
 html, body, div, span, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, abbr, address, cite, code, del, dfn, em, img, ins, kbd, q, samp, small, strong, sub, sup, var, b, i, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td, article, aside, canvas, details, figcaption, figure, footer, header, hgroup, menu, nav, section, summary, time, mark, audio, video{
@@ -39,43 +39,43 @@ strong {
   display: inline-block;
 }
 
-/* 텍스트 컨테이너 벗어남 방지 */
+
 h1, h2, h3, h4, h5, h6, p, ol, ul, li {
   overflow-wrap: break-word;
 }
 
-/* 인라인 요소 svg 태그 block화 */
+
 svg {
   display: block;
 }
 
 
-/* 하이퍼퍼링크 초기화 */
+
 a {
   text-decoration: none;
   color: inherit;
   display: block;
 }
 
-/* 리스트 초기화 */
+
 ul, ol, li {
   list-style: none;
 }
 
-/* 이미지 및 비디오 초기화 */
+
 img, video {
   max-width: 100%;
   height: auto;
   display: block;
 }
 
-/* 테이블 초기화 */
+
 table {
   border-collapse: collapse;
   border-spacing: 0;
 }
 
-/* 인풋, 버튼 초기화 */
+
 button, input, textarea {
   font: inherit;
   border: none;
@@ -87,12 +87,12 @@ button {
   cursor: pointer;
 }
 
-/* 블록 요소 초기화 */
+
 section, article, header, footer, nav, aside {
   display: block;
 }
 
-/* 블록 인용문 초기화 */
+
 blockquote, q {
   quotes: none;
 }
@@ -102,14 +102,14 @@ q::before, q::after {
   content: '';
 }
 
-/* 수평선 초기화 */
+
 hr {
   border: 0;
   height: 0;
   background: none;
 }
 
-/* 기타 초기화 */
+
 fieldset {
   border: none;
 }

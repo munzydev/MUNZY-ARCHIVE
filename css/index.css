@@ -1,13 +1,8 @@
 @charset "utf-8";
-/* reset.css에서 기존의 디자인이 초기화된 상태를 기반으로, style.css에서의 전역 변수나 공통 컴포넌트들이 기본적으로 설정된 점을 참고하여서 index.css를 작성하여 디자인을 완성하도록 한다. */
 
 
-/*
- * 4-6) Expertise 리빌 인터랙션
- * 1) 타이틀은 줄 단위로 split 후 순차 reveal
- * 2) 각 카드는 sub-title -> title -> des 순으로 stagger reveal
- * 3) JS 상태 클래스(is-expertise-*)를 기준으로 제어
- */
+
+
 #expertise .title-txt-type[data-expertise-split] {
    --expertise-title-stagger: 100ms;
    --expertise-title-duration: 700ms;
@@ -99,16 +94,12 @@
    opacity: 0.98;
 }
 
-/* =========================================================================
-   1. Header (글로벌 헤더)
-   ========================================================================= */
-/* =========================================================================
-   2. Hero (메인 비주얼)
-   ========================================================================= */
 
-/* 2-1) hero 전체 */
+
+
+
 #hero {
-   /* 데스크톱(큰 화면 포함) 높이를 채우고, 내부 요소를 세로로 배치합니다. */
+   
    aspect-ratio: 16/9;
    width: 100%;
    height: 100vh;
@@ -116,29 +107,29 @@
    display: flex;
    flex-direction: column;
    overflow: hidden;
-   /* 배경 비디오나 화면 밖으로 넘치는 요소를 가립니다. */
+   
    background-color: var(--primitive-color-brand-secondary);
-   /* 비디오 재생 전이나 투명할 때의 대체 배경색 */
+   
    color: var(--primitive-color-neutral-white);
 }
 
-/* Hero 배경 비디오*/
+
 #hero .hero-bg-video {
    position: absolute;
    top: 0;
    left: 0;
    width: 100%;
    height: 100%;
-   /* 100vh 대신 100%를 써야 최소 높이 800px까지 배경 영상이 함께 늘어납니다. */
+   
    object-fit: cover;
-   /* 가로세로 비율을 유지하면서 여백 없이 화면을 꽉 채웁니다. */
+   
    z-index: 0;
-   /* 다른 스크롤 요소들 맨 밑으로 깔아줍니다. */
+   
 }
 
-/* 2-2) hero 네비게이션*/
+
 #hero .hero-nav {
-   /* 네비게이션은 상단에 떠있는 형태(오버레이)로 배치합니다. */
+   
    position: absolute;
    top: 0;
    left: 50%;
@@ -146,22 +137,22 @@
    width: 100%;
    display: flex;
    justify-content: space-between;
-   /* 양끝단으로 메뉴 분산 */
+   
    align-items: center;
    padding: 30px var(--common-space-padding-x-default);
-   /* 좌우 여백 24px (디자인 시스템 기준) */
+   
    z-index: 10;
 }
 
 #hero .hero-nav .wrapper  {
    list-style: none;
-   /* 기본 불릿 제거 */
+   
 }
 
 #hero .hero-nav .wrapper ul {
    display: flex;
    gap: 32px;
-   /* 메뉴 간격 */
+   
 }
 
 #hero .hero-nav a {
@@ -173,7 +164,7 @@
 }
 
 #hero .hero-nav .site-logo {
-   /* 로고를 화면 정중앙에 고정하기 위한 기법 */
+   
    position: absolute;
    left: 50%;
    top: 50%;
@@ -181,42 +172,41 @@
 }
 
 
-/* 2-3) hero 콘텐츠 영역 */
+
 #hero .contents {
-   /* 상단 네비게이션 공간(40px)을 제외하고 나머지 공간을 채웁니다. */
+   
    position: relative;
    z-index: 2;
-   /* 0번에 위치한 배경 비디오 위로 요소를 올리기 위함 */
+   
    flex: 1;
    display: flex;
    flex-direction: column;
    justify-content: end;
-   /* 타이틀은 위로, 하단 콘텐츠는 아래로 배치됩니다. */
+   
    width: 100%;
    margin: 0 auto;
    padding: 0 var(--common-space-padding-x-default) 30px;
-   /* 해당 30px은 tablet에서 24px, 모바일에서 18px */
-   /* 상단 여백은 nav보다 조금 더 크게 확보 */
+   
+   
    box-sizing: border-box;
 }
 
-/* 2-4) hero 제목 */
+
 #hero h2.hero-title {
    position: absolute;
    top: 30%;
    left: 50%;
    transform: translate(-50%, -30%);
-   /* 타이틀을 세로로 나열하고, 타이포 가이드에 맞춰 가로 폭을 제한합니다. */
+   
    display: flex;
    flex-direction: column;
    row-gap: 20px;
    width: 100%;
    padding: 0 var(--common-space-padding-x-default);
    font-weight: 400;
-   /* 화면 너비 1280px일 때 7.5vw가 96px입니다.
-       1280px 이상에서 화면이 커지면 글씨도 같이 커지고, 그 이하에서는 96px(최솟값)로 유지됩니다. */
+   
    font-size: max(var(--primitive-typo-font-size-default-display-1), 7.5vw);
-   /* 레퍼런스처럼 라인 이동 시 타이틀 영역 밖은 잘리도록 처리합니다. */
+   
    overflow: hidden;
    overflow: clip;
 }
@@ -225,7 +215,7 @@
    font-family: var(--font-family-serif);
    font-size: max(var(--primitive-typo-font-size-default-display-1), 7.5vw);
    line-height: 1;
-   /* 글자의 위아래 기본 여백을 줄여 타이트하게 붙입니다. */
+   
    display: block;
    position: relative;
    padding-bottom: 0.2em;
@@ -234,7 +224,7 @@
    transform-origin: 50% 100%;
 }
 
-/* 타이포 가이드 규칙: 왼쪽-가운데-오른쪽 리듬 정렬 */
+
 #hero h2.hero-title span:nth-child(1) {
    text-align: left;
 }
@@ -251,24 +241,24 @@
    font-style: italic;
 }
 
-/* 2-5) hero 하단 콘텐츠*/
+
 #hero .btm-contents {
-   /* 비디오 영역과 텍스트(카피) 영역을 양끝으로 배치합니다. */
+   
    display: flex;
    justify-content: space-between;
    align-items: center;
    width: 100%;
 }
 
-/* 2-6) hero 비디오*/
+
 #hero .video-placeholder {
-   /* 비디오 박스 사이즈 (요청한 피그마 기준에 따라 추후 수정 가능) */
+   
    aspect-ratio: 24/15;
    width: clamp(240px, 17.7vw, 340px);
-   /* 1920px 해상도에서 최대 340px에 도달하도록 최적화 (17.7vw = 340/1920) */
+   
 
    clip-path: inset(0 round clamp(10px, 0.625vw, 12px));
-   /* 10px(1280px)부터 비례하여 확대, 최대 12px 고정 (clip-path로 GPU 레이어까지 완벽히 마스킹) */
+   
 }
 
 #hero .video-placeholder .hero-video {
@@ -276,24 +266,24 @@
    height: 100%;
    object-fit: cover;
    clip-path: inset(0 round clamp(10px, 0.625vw, 12px));
-   /* 10px(1280px)부터 비례하여 확대, 최대 12px 고정 (clip-path로 GPU 레이어까지 완벽히 마스킹) */
+   
 
-   /* 비디오 비율을 유지하면서 박스를 꽉 채웁니다. */
+   
 }
 
-/* 2-7) hero 카피 */
+
 #hero .hero-copy {
-   /* 우측 하단 텍스트 영역 */
+   
    aspect-ratio: 24/15;
    width: clamp(240px, 17.7vw, 340px);
-   /* 1920px 해상도에서 최대 340px에 도달하도록 최적화 (17.7vw = 340/1920) */
+   
    display: flex;
    flex-direction: column;
    justify-content: space-between;
    padding: 14px 0;
    font-family: var(--font-family-pretendard);
    font-size: max(12px, 0.7vw);
-   /* 1280px일 때 12px, 그 이상에서는 유동적으로 확대 */
+   
    line-height: 1.25;
    font-weight: 400;
 }
@@ -306,17 +296,12 @@
 #hero .hero-copy .txt-kor {
    letter-spacing: -0.4px;
    word-break: keep-all;
-   /* 한글 단어가 중간에서 끊기지 않도록 유지 */
+   
 }
 
-/* 
- * 2-8) Hero 리빌 인터랙션
- * 1. JS가 #hero에 상태 클래스를 부여하면(ready/active) 라인별 리빌이 실행됩니다.
- * 2. 타이틀 -> 하단 비디오/카피 순서로 지연(stagger)되어 등장합니다.
- * 3. 기존 마크업은 그대로 유지하고, 상태 클래스 기반으로만 동작합니다.
- */
+
 #hero .hero-title[data-hero-split] {
-   /* AUPALE 레퍼런스 Hero(TweenText) 기준: duration 700ms, line stagger 100ms */
+   
    --hero-stagger-delay: 100ms;
    --hero-default-delay: 0s;
    --hero-line-duration: 700ms;
@@ -370,13 +355,11 @@
 }
 
 
-/* =========================================================================
-   3. Intro (소개)
-   ========================================================================= */
 
-/* 3-1) intro 전체 */
+
+
 #intro {
-   /* 1) 라인 배경 2) 중앙 타이틀 3) 좌우 회전 카드 4) 하단 카피 */
+   
    --intro-scroll-progress: 0;
    --intro-scroll-track-height: 340svh;
    position: relative;
@@ -390,7 +373,7 @@
    background: var(--primitive-color-neutral-white) url("../assets/img/introduction_bg.png") center / cover no-repeat;
 }
 
-/* 3-2) wrapper */
+
 #intro .wrapper {
    position: sticky;
    top: 0;
@@ -405,7 +388,7 @@
    box-sizing: border-box;
 }
 
-/* 3-3) intro 타이틀 */
+
 #intro #intro-title {
    position: absolute;
    left: 50%;
@@ -443,7 +426,7 @@
    font-weight: 300;
 }
 
-/* 3-4) 이미지 플레이스홀더 */
+
 #intro .placeholder-wrap {
    position: relative;
    z-index: 1;
@@ -472,12 +455,7 @@
    transform-origin: center center;
 }
 
-/* 
- * [Intro 섹션 이미지 플레이스홀더 반응형 위치 조정]
- * 1. 개념: clamp(min, preferred, max) 함수를 사용하여 화면 너비에 따라 유동적으로 위치를 변경합니다.
- * 2. 계산: 화면 1280px 기준 125px을 구현하기 위해 (125 / 1280 * 100) = 약 9.77vw 사용
- * 3. 범위: 최소 100px에서 최대 150px까지 유연하게 조절되도록 설계되었습니다.
- */
+
 #intro .placeholder-wrap .img-placeholder:nth-child(1) {
    --intro-image-start-y: clamp(100px, 9.77vw, 150px);
    --intro-image-end-y: clamp(-150px, -9.77vw, -100px);
@@ -496,7 +474,7 @@
    object-fit: cover;
 }
 
-/* 3-5) intro 카피 */
+
 #intro .intro-copy {
    position: absolute;
    left: 50%;
@@ -521,12 +499,7 @@
    word-break: keep-all;
 }
 
-/* 
- * 3-6) Intro 리빌 인터랙션
- * 1. 타이틀 라인을 줄 단위로 순차 리빌합니다.
- * 2. 좌우 이미지는 교차 방향으로 진입한 뒤 원래 위치로 정착합니다.
- * 3. 하단 카피는 마지막에 후행 등장시켜 메시지 흐름을 완성합니다.
- */
+
 #intro #intro-title[data-intro-split] {
    --intro-line-stagger: 90ms;
    --intro-line-delay-base: 0s;
@@ -621,16 +594,14 @@
 }
 
 
-/* =========================================================================
-   4. Expertise (전문 분야)
-   ========================================================================= */
 
-/* 4-1) expertise 전체 */
+
+
 #expertise {
    position: relative;
    padding: 0 10% 30%;
    --expertise-reveal-y: 26px;
-   /* 해당 100px은 tablet, mobile에서  --common-space-padding-x-tablet과 --common-space-padding-x-mobile로 변수화시키기*/
+   
    background-image: url('../assets/img/expertise_bg.jpg');
    background-size: cover;
    background-position: center;
@@ -638,18 +609,18 @@
    display: flex;
    flex-direction: column;
    gap: 200px;
-   /* tablet, mobile 변동 요소 */
+   
    overflow: hidden;
 }
 
 
-/* 4-2) 타이틀 */
+
 #expertise>.title-wrap {
    display: flex;
    align-items: end;
    height: 100vh;
    max-height: 800px;
-   /* tablet, mobile에서는 줄일 예정 */
+   
 }
 
 #expertise .title-txt-type {
@@ -661,12 +632,12 @@
    font-weight: 300;
 }
 
-/* 4-3) 전체 콘텐츠 래퍼 */
+
 #expertise .contents-wrap {
    display: flex;
    flex-direction: column;
    row-gap: 200px;
-   /* tablet, mobile 변동 요소, #expertise의 gap과 동일 */
+   
 }
 
 #expertise .contents-wrap .contents {
@@ -682,9 +653,9 @@
 }
 #expertise .contents-wrap .contents:nth-child(4) {}
 
-/* 4-4) 개별 콘텐츠*/
 
-/* 4-5) box1 컴포넌트 */
+
+
 #expertise .box1 {
    color: var(--primitive-color-neutral-white);
 }
@@ -701,11 +672,9 @@
 }
 
 
-/* =========================================================================
-   5. Works (프로젝트)
-   ========================================================================= */
 
-/* 5-1) works 전체 */
+
+
 #works {
    --works-reveal-y: clamp(14px, 1.8vw, 26px);
 }
@@ -756,7 +725,7 @@
    display: flex;
    flex-direction: column;
    row-gap: var(--common-space-padding-y-default);
-   /* 공통 위아래 여백과 works의 gap은 동일하게 감. */
+   
 }
 
 #works article {
@@ -772,7 +741,7 @@
    flex: 1;
    aspect-ratio: 60/35;
    border-radius: clamp(10px, 1.5625vw, 30px);
-   /* 1280px 기준 20px이며, 화면 너비에 따라 12px~30px 사이로 유동적으로 조절됨 */
+   
    overflow: hidden;
 }
 
@@ -792,7 +761,6 @@
    }
 }
 
-/* 5-2) Internal Projects */
 
 
 
@@ -802,7 +770,8 @@
 
 
 
-/* 5-3) Personal Projects */
+
+
 #works article.personal-projects {
    flex-direction: row-reverse;
 }
@@ -816,21 +785,19 @@
 
 
 
-/* =========================================================================
-   6. Footer (푸터)
-   ========================================================================= */
 
-/* 6-1) footer 전체 */
+
+
 footer {
    background-color: var(--primitive-color-brand-primary);
    padding: var(--common-space-padding-y-default) var(--common-space-padding-x-default);
    display: flex;
    justify-content: space-between;
    align-items: flex-start;
-   gap: 100px; /* 로고와 info 사이 최소 간격 */
+   gap: 100px; 
 }
 
-/* 6-2) info 영역 */
+
 footer .info {
    display: flex;
    flex-direction: column;
@@ -838,12 +805,12 @@ footer .info {
 }
 
 footer .info .box2 {
-   /* box2 공통 max-width */
+   
    max-width: 360px;
 
 }
 
-/* 6-3) contact (box2 컴포넌트) */
+
 
 
 
@@ -854,16 +821,16 @@ footer .contact .content address.txt {
 
 
 
-/* 6-4) copyright (box2 컴포넌트) */
 
 
 
 
-/* 6-5) 워드마크 */
+
+
 footer .footer-wordmark {
-   /* 더 이상 공중에 띄우지 않습니다. 옆의 Info가 밀리지 않게, 남는 공간만 영리하게 차지합니다. */
+   
    flex: 1;
-   min-width: 0; /* 창이 좁아지더라도 이미지가 영역 밖으로 무단 침입하지 않고 유연하게 줄어듭니다. */
+   min-width: 0; 
 
    max-width: 1000px;
 }
@@ -871,14 +838,12 @@ footer .footer-wordmark {
 footer .footer-wordmark img {
    width: 100%;
    height: 100%;
-   object-fit: contain; /* 비율 유지 */
-   object-position: right bottom; /* 우측 아래로 정렬 */
+   object-fit: contain; 
+   object-position: right bottom; 
 }
 
 
-/* =========================================================================
-   7. modal-projects (#modal-internal, #modal-personal 공통 템플릿)
-   ========================================================================= */
+
 .modal-projects {
    --modal-fade-duration: 520ms;
    --modal-content-duration: 680ms;
@@ -967,7 +932,7 @@ footer .footer-wordmark img {
    width: 80px;
 }
 
-/* 모달 닫기 아이콘: 가상요소로 X(교차 라인) 형태를 그려 이미지 의존성을 제거 */
+
 .modal-projects .top .btn-close .icon-close {
    display: inline-block;
    width: 75%;

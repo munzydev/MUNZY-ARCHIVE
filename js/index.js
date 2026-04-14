@@ -1,12 +1,4 @@
-/**
- * 페이지 인터랙션 초기화 스크립트
- * 1) 헤더 Contact 링크 안내 알림
- * 2) 글로벌 헤더 메뉴 토글/스크롤 노출 제어
- * 3) Hero 라인 리빌 및 하단 콘텐츠 순차 등장
- * 4) Intro 이미지 스크롤 교차 이동
- * 5) 섹션 경계 스크롤 핸드오프(부드러운 구간 전환)
- * 6) Works 모달 열기/닫기 및 접근성 상태 동기화
- */
+
 document.addEventListener('DOMContentLoaded', () => {
     initWayContactAlert();
     initCopyEmail();
@@ -20,13 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initProjectModals();
 });
 
-/**
- * Hero 진입 모션을 초기화한다.
- * 1) 타이틀 라인(span) 순차 리빌
- * 2) 하단 비디오/카피 순차 등장
- * 3) 뷰포트 재진입 상태(inview) 동기화
- * 4) prefers-reduced-motion 사용자에게는 모션을 최소화
- */
+
 function initHeroReveal() {
     const heroSection = document.querySelector('#hero');
     const heroTitle = heroSection ? heroSection.querySelector('.hero-title') : null;
@@ -87,7 +73,7 @@ function initHeroReveal() {
         clearHeroRevealClasses();
         heroSection.classList.add('is-hero-inview');
 
-        // 클래스 재적용 시 transition이 확실히 재시작되도록 레이아웃을 한 번 고정한다.
+        
         void heroSection.offsetWidth;
 
         heroSection.classList.add('is-hero-reveal-ready');
@@ -190,10 +176,7 @@ function initHeroReveal() {
     syncHeroInViewState(getIsHeroInViewport());
 
     if (typeof IntersectionObserver === 'function') {
-        /**
-         * Hero는 실제 화면에 들어왔을 때만 1회 강한 리빌을 재생한다.
-         * 이후에는 in-view 상태만 동기화해 재진입 시 미세 페이드만 적용한다.
-         */
+        
         heroInViewObserver = new IntersectionObserver((entries) => {
             entries.forEach((entry) => {
                 syncHeroInViewState(entry.isIntersecting);
@@ -205,7 +188,7 @@ function initHeroReveal() {
 
         heroInViewObserver.observe(heroSection);
     } else if (!reducedMotionMediaQuery.matches) {
-        // 구형 브라우저 폴백: observer 미지원 시 초기 진입에서만 1회 재생한다.
+        
         playHeroRevealOnce();
     }
 
@@ -237,13 +220,7 @@ function initHeroReveal() {
     });
 }
 
-/**
- * Intro 진입 모션을 초기화한다.
- * 1) 타이틀 라인(span) 순차 리빌
- * 2) 좌우 이미지 교차 진입(아래->위 / 위->아래)
- * 3) 하단 카피 후행 등장
- * 4) prefers-reduced-motion 사용자에게는 모션을 최소화
- */
+
 function initIntroReveal() {
     const introSection = document.querySelector('#intro');
     const introTitle = introSection ? introSection.querySelector('#intro-title') : null;
@@ -317,7 +294,7 @@ function initIntroReveal() {
         ensureIntroPrehiddenState();
         introSection.classList.add('is-intro-inview');
 
-        // 상태 클래스를 재적용할 때 transition이 재시작되도록 reflow를 고정한다.
+        
         void introSection.offsetWidth;
 
         introSection.classList.add('is-intro-reveal-ready');
@@ -429,10 +406,7 @@ function initIntroReveal() {
     syncIntroInViewState(getIsIntroInViewport());
 
     if (typeof IntersectionObserver === 'function') {
-        /**
-         * Intro는 실제 화면 진입 시 1회 강한 리빌을 실행하고,
-         * 이후에는 in-view 상태만 동기화해 과도한 반복 연출을 피한다.
-         */
+        
         introInViewObserver = new IntersectionObserver((entries) => {
             entries.forEach((entry) => {
                 syncIntroInViewState(entry.isIntersecting);
@@ -444,7 +418,7 @@ function initIntroReveal() {
 
         introInViewObserver.observe(introSection);
     } else if (!reducedMotionMediaQuery.matches) {
-        // 구형 브라우저 폴백: observer 미지원 시 최초 진입에서 1회 재생한다.
+        
         playIntroRevealOnce();
     }
 
@@ -476,12 +450,7 @@ function initIntroReveal() {
     });
 }
 
-/**
- * Expertise 진입 모션을 초기화한다.
- * 1) 타이틀을 줄 단위로 분리해 순차 reveal
- * 2) 카드별 sub-title/title/des를 순차 reveal
- * 3) prefers-reduced-motion 환경에서는 모션 없이 즉시 표시
- */
+
 function initExpertiseReveal() {
     const expertiseSection = document.querySelector('#expertise');
     const expertiseTitleWrap = expertiseSection ? expertiseSection.querySelector(':scope > .title-wrap') : null;
@@ -588,7 +557,7 @@ function initExpertiseReveal() {
     };
 
     const getIsExpertiseTitleInRevealZone = () => {
-        // title-wrap이 100vh여도 실제 텍스트(h2) 위치 기준으로 reveal 트리거를 판정한다.
+        
         const titleMeasureElement = expertiseTitle || expertiseTitleWrap || expertiseSection;
         const titleMeasureRect = titleMeasureElement.getBoundingClientRect();
         const viewportHeight = window.innerHeight || document.documentElement.clientHeight || 1;
@@ -707,7 +676,7 @@ function initExpertiseReveal() {
     };
 
     const getIsExpertiseItemInRevealZone = (itemElement) => {
-        // 모든 카드의 reveal 타이밍을 .contents가 아닌 .box1 위치 기준으로 통일한다.
+        
         const revealMeasureElement = getExpertiseItemMeasureElement(itemElement);
         const itemRect = revealMeasureElement.getBoundingClientRect();
         const viewportHeight = window.innerHeight || document.documentElement.clientHeight || 1;
@@ -720,7 +689,7 @@ function initExpertiseReveal() {
         const itemRevealZone = getExpertiseItemRevealZoneRatio();
         const revealZoneTop = viewportHeight * itemRevealZone.top;
         const revealZoneBottom = viewportHeight * itemRevealZone.bottom;
-        // 카드 중심점이 중앙 밴드에 들어오거나, 빠른 스크롤로 밴드를 지난 직후(여전히 화면 내)면 reveal 처리한다.
+        
         const isCenterInsideRevealZone = itemCenterY >= revealZoneTop && itemCenterY <= revealZoneBottom;
         const hasCenterPassedRevealZoneWhileVisible = itemCenterY < revealZoneTop && itemRect.bottom > 0;
 
@@ -945,18 +914,8 @@ function initExpertiseReveal() {
     });
 }
 
-/**
- * Intro 이미지 2개를 스크롤 진행도에 맞춰 교차 이동시킨다.
- * - 첫 번째 이미지는 시작 Y -> 두 번째 이미지의 시작 Y
- * - 두 번째 이미지는 시작 Y -> 첫 번째 이미지의 시작 Y
- * - CSS 변수(--intro-scroll-progress)만 갱신해 스타일 충돌을 줄인다.
- */
-/**
- * Works 타이틀(H3) 텍스트 리빌 인터랙션을 초기화한다.
- * 1) h3 내부를 줄 단위(span)로 분리해 stagger reveal
- * 2) 스크롤 구간(디바이스별 밴드)에 들어오면 한 번만 노출
- * 3) prefers-reduced-motion 환경에서는 즉시 노출
- */
+
+
 function initWorksHeadingReveal() {
     const worksSection = document.querySelector('#works');
     const worksTitles = worksSection
@@ -1480,9 +1439,7 @@ function initIntroImageScrollSwap() {
     });
 }
 
-/**
- * 헤더 Contact 링크는 섹션 이동 대신 브라우저 기본 알림창을 표시한다.
- */
+
 function initWayContactAlert() {
     const wayContactLink = document.querySelector('.way-contact');
 
@@ -1496,9 +1453,7 @@ function initWayContactAlert() {
     });
 }
 
-/**
- * 푸터 연락처 아이콘 클릭 시 이메일 주소를 클립보드에 복사하고 알림창을 표시한다.
- */
+
 function initCopyEmail() {
     const copyIconLink = document.querySelector('footer .contact .icon a');
 
@@ -1511,11 +1466,11 @@ function initCopyEmail() {
         const emailAddress = 'jayworkofficial23@gmail.com';
 
         try {
-            // 최신 클립보드 API 시도
+            
             await navigator.clipboard.writeText(emailAddress);
             window.alert(`[복사 완료] ${emailAddress}\n이메일 주소가 클립보드에 복사되었습니다.`);
         } catch (err) {
-            // 구형 브라우저 폴백(Fallback) 방어코드
+            
             const textArea = document.createElement('textarea');
             textArea.value = emailAddress;
             textArea.style.position = 'absolute';
@@ -1536,9 +1491,7 @@ function initCopyEmail() {
     });
 }
 
-/**
- * 글로벌 헤더 메뉴 인터랙션(열기/닫기, 스크롤 임계값 노출)을 초기화한다.
- */
+
 function initHeaderMenu() {
     const header = document.querySelector('.global-header');
     const menuToggleButton = document.querySelector('#menu-toggle');
@@ -1566,7 +1519,7 @@ function initHeaderMenu() {
 
     const isScrollableOverflowValue = (overflowValue) => /(auto|scroll|overlay)/.test(overflowValue);
 
-    // 현재 프로젝트는 body가 실제 스크롤 컨테이너이므로 window 외 스크롤 타겟도 함께 감지한다.
+    
     const getScrollEventTargets = () => {
         const targets = [window, document, document.documentElement];
         const bodyStyles = window.getComputedStyle(document.body);
@@ -1792,13 +1745,7 @@ function initHeaderMenu() {
     requestAnimationFrame(refreshHeaderActivationContext);
 }
 
-/**
- * 메인 섹션 간 스크롤 핸드오프를 초기화한다.
- * 1) wheel 입력 기준으로 섹션 경계에서만 다음/이전 섹션으로 부드럽게 이동
- * 2) Intro는 이미지 스크롤(progress=1) 완료 전까지 아래 섹션으로 넘기지 않음
- * 3) 앵커(#hero/#intro/#expertise/#works/#contact) 클릭도 동일한 스무스 이동 사용
- * 4) 모달/헤더 메뉴가 열린 상태에서는 개입하지 않아 기존 인터랙션 충돌 방지
- */
+
 function initSectionScrollHandoff() {
     const sectionSelectors = ['#hero', '#intro', '#expertise', '#works', 'footer'];
     const smoothAnchorTargets = new Set(['#hero', '#intro', '#expertise', '#works', '#contact']);
@@ -2183,10 +2130,7 @@ function initSectionScrollHandoff() {
     });
 }
 
-/**
- * Works 모달 시스템을 초기화한다.
- * - 중복 로직을 공통 컨트롤러로 묶어 확장 시 유지보수성을 높인다.
- */
+
 function initProjectModals() {
     const modalControllers = [
         createModalController({
@@ -2218,9 +2162,7 @@ function initProjectModals() {
     });
 }
 
-/**
- * 개별 모달의 열기/닫기/포커스 복귀를 담당하는 컨트롤러를 생성한다.
- */
+
 function createModalController({ openTriggerSelector, modalSelector }) {
     const openTriggers = document.querySelectorAll(openTriggerSelector);
     const modal = document.querySelector(modalSelector);
@@ -2359,7 +2301,7 @@ function createModalController({ openTriggerSelector, modalSelector }) {
         });
     });
 
-    // 오버레이(빈 영역) 클릭 시 모달을 닫는다.
+    
     modal.addEventListener('click', (e) => {
         if (e.target === modal) {
             close();
