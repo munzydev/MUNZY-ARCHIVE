@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <!-- Basic character encoding and responsive settings -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="format-detection" content="telephone=no, address=no, email=no">
+    <meta name="robots" content="index, follow"> <!-- robot meta tag -->
+
+
+    <!-- Favicon and PWA basic settings -->
+    <link rel="icon" type="image/svg+xml" href="assets/img/favicon-32x32.svg"> <!-- For modern browsers -->
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/img/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="assets/img/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="assets/img/apple-touch-icon.png">
+    <link rel="shortcut icon" href="https://munzydev.github.io/MUNZY-ARCHIVE/assets/img/favicon-32x32.svg"><!-- NAVER favicon markup -->
+    <!-- SEO: 1) Summary meta 2) Social cards 3) Canonical URL -->
+    <title data-i18n="page_title">MUNZY ARCHIVE</title>
+    <meta name="description" content="웹 퍼블리셔 MUNZY의 포트폴리오입니다. 반응형 웹 구현, 인터랙션 퍼블리싱, UX 설계, 성능 최적화와 배포까지 실무 중심 프로젝트를 담았습니다.">
+    <link rel="canonical" href="https://munzydev.github.io/MUNZY-ARCHIVE">
+
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="MUNZY ARCHIVE | 경력 웹 퍼블리셔 포트폴리오">
+    <meta property="og:description" content="웹 퍼블리셔 MUNZY의 포트폴리오입니다. 반응형 웹 구현, 인터랙션 퍼블리싱, UX 설계, 성능 최적화와 배포까지 실무 중심 프로젝트를 담았습니다.">
+    <meta property="og:image" content="https://munzydev.github.io/MUNZY-ARCHIVE/assets/img/og-main.jpg">
+    <meta property="og:url" content="https://munzydev.github.io/MUNZY-ARCHIVE">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="MUNZY ARCHIVE | 경력 웹 퍼블리셔 포트폴리오">
+    <meta name="twitter:description" content="웹 퍼블리셔 MUNZY의 포트폴리오입니다. 반응형 웹 구현, 인터랙션 퍼블리싱, UX 설계, 성능 최적화와 배포까지 실무 중심 프로젝트를 담았습니다.">
+    <meta name="twitter:image" content="https://munzydev.github.io/MUNZY-ARCHIVE/assets/img/og-main.jpg">
+
+    <link rel="alternate" hreflang="x-default" href="https://munzydev.github.io/MUNZY-ARCHIVE">
+    <link rel="alternate" hreflang="en" href="https://munzydev.github.io/MUNZY-ARCHIVE">
+
+    <meta name="theme-color" content="#35483f">
+
+
+
+    <!-- Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,500;1,600&family=Orbit&family=Space+Grotesk:wght@300..700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" as="style" crossorigin
+        href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+
+
+
+    <!-- Load basic CSS -->
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/reset.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/index.css">
+    <link rel="stylesheet" href="css/responsive.css">
+</head>
+
+<body>
+    <!--
+      1) Figma Home 구조 기준 시맨틱 골격
+      2) 섹션 ID는 앵커 네비게이션 연결 기준
+      3) 현재 단계는 구조만 작성하고 실제 콘텐츠/스타일은 후속 작업에서 반영 - 현재 진행중.
+    -->
+
+    <!-- 글로벌 헤더 (1, 2차 헤더 통합) -->
+    <header class="global-header">
+        <div class="header-wrapper">
+            <!-- 1차 헤더 (항상 노출되는 영역) -->
+            <div class="header-primary">
+                <p><a href="#" class="way-contact">how to contact?</a></p>
+                <h1 class="site-logo"><a href="./"><img src="assets/logo/color=green.svg" alt="사이트 로고"></a></h1>
+
+                <!-- 햄버거 메뉴 버튼 (button 태그 적용을 통한 웹 접근성 개선) -->
+                <button type="button" class="btn-menu-toggle" id="menu-toggle" aria-label="Open menu"
+                    aria-controls="header-secondary" aria-expanded="false">
+                    <span class="icon-wrapper" aria-hidden="true">
+                        <span class="line"></span>
+                    </span>
+                </button>
+            </div>
+
+            <!-- 2차 헤더 (숨겨져 있다가 메뉴 클릭 시 펼쳐지는 영역) -->
+            <nav id="header-secondary" class="header-secondary" aria-hidden="true">
+                <div class="header-secondary-inner">
+                    <ul>
+                        <li><a href="#intro">INTRO</a></li>
+                        <li><a href="#expertise">EXPERTISE</a></li>
+                        <li><a href="#works">WORKS</a></li>
+                        <li><a href="#contact">CONTACT</a></li>
+                    </ul>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <main id="hero" class="hero">
+        <!-- 배경 비디오 추가 (소리 끔, 자동/반복 재생) -->
+        <video class="hero-bg-video" src="./assets/video/hero_bg_video.webm" autoplay loop muted playsinline
+            aria-hidden="true"></video>
+
+        <!-- 모바일에서는 hero-nav 안보이게 할 예정 -->
+        <nav class="hero-nav">
+            <a href="./" class="site-logo"><img src="assets/logo/color=white.svg" alt="MUNZY ARCHIVE 홈 로고"></a>
+
+            <div class="wrapper">
+                <ul>
+                    <li><a href="#intro">INTRO</a></li>
+                    <li><a href="#expertise">EXPERTISE</a></li>
+                </ul>
+            </div>
+            <div class="wrapper">
+                <ul>
+                    <li><a href="#works">WORKS</a></li>
+                    <li><a href="#contact">CONTACT</a></li>
+                </ul>
+            </div>
+        </nav>
+
+        <div class="contents">
+            <h2 class="hero-title">
+                <span>Turning Vision</span>
+                <span><em>Into Results</em></span>
+                <span>From Idea.</span>
+            </h2>
+
+            <div class="btm-contents">
+                <div class="video-placeholder">
+                    <video class="hero-video" src="./assets/video/hero_sm-video.webm" autoplay muted loop playsinline
+                        poster="assets/img/hero_sm-video-poster.png">
+                    </video>
+                </div>
+
+                <div class="hero-copy">
+                    <p class="txt-eng">
+                        PRD/FSD → Web implementation &amp; deployment → Brochure &amp; white paper → Stakeholder
+                        presentation.
+                    </p>
+                    <p class="txt-kor">
+                        기획, 퍼블리싱, 문서화를 유기적으로 연결해<br>
+                        UI/UX 설계부터 웹 구현, 산출물 정리까지 엔드투엔드로 제공합니다.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <section id="intro">
+        <div class="wrapper">
+            <h2 id="intro-title">
+                <span>Rather than</span>
+                <span>a good-looking screen,</span>
+                <span>I Build a <em>Persuasive Structure.</em></span>
+            </h2>
+
+            <div class="placeholder-wrap">
+                <div class="img-placeholder"><img src="assets/img/introduction_icecream.png" alt="인트로 비주얼 아이스크림 이미지"></div>
+                <div class="img-placeholder"><img src="assets/img/introduction_music.png" alt="인트로 비주얼 음악 감상 이미지"></div>
+            </div>
+
+            <div class="intro-copy">
+                <p>고급스러움은<br>보이지 않는 디테일에서 완성됩니다.</p>
+                <p>PRD를 기준으로 방향성을 정하고,<br>구현과 배포로 결과를 만들어냅니다.</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="expertise" class="expertise">
+        <div class="title-wrap">
+            <h2 class="title-txt-type">About my <br><em>Expertise.</em></h2>
+        </div>
+
+        <div class="contents-wrap">
+            <div class="contents">
+                <div class="box1">
+                    <div class="title-wrap">
+                        <p class="sub-title">플랫폼 기획 및 설계</p>
+                        <h3 class="title">Planning</h3>
+                    </div>
+                    <p class="des">서비스의 목적을 명확히 정의한 뒤, 사용자 경험과 비즈니스 목표를 함께 고려해 문제를 정의하며, 서비스 흐름·기능 정책·화면 단위까지 실행 가능한
+                        스펙으로 설계합니다.</p>
+                </div>
+            </div>
+
+            <div class="contents">
+                <div class="box1">
+                    <div class="title-wrap">
+                        <p class="sub-title">디자인 및 퍼블리싱</p>
+                        <h3 class="title">UX/UI</h3>
+                    </div>
+                    <p class="des">사용자 관점에서 정보 구조와 화면 구성을 설계하고, 일관된 인터페이스 시스템과 안정적인 퍼블리싱을 바탕으로 서비스 목적에 맞는 완성도 높은 사용자 경험을
+                        구현합니다.</p>
+                </div>
+            </div>
+
+            <div class="contents">
+                <div class="box1">
+                    <div class="title-wrap">
+                        <p class="sub-title">비즈니스 문서 및 스토리텔링</p>
+                        <h3 class="title">Pitch Deck</h3>
+                    </div>
+                    <p class="des">기획 의도와 서비스 구조, 시장 맥락을 체계적으로 정리해 투자자·파트너·내부 이해관계자에게 전달력 높은 문서와 피치덱으로 구체화합니다.</p>
+                </div>
+            </div>
+
+            <div class="contents">
+                <div class="box1">
+                    <div class="title-wrap">
+                        <p class="sub-title">AI를 이용한 다양한 산출물 제작</p>
+                        <h3 class="title">AI Productivity</h3>
+                    </div>
+                    <p class="des">다양한 AI를 활용해 리서치, 기획, UX 라이팅, 문서화, 시각화까지 다양한 산출물을 빠르고 구조적으로 제작합니다.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="works">
+        <article class="internal-projects">
+            <div class="title-btn1">
+                <h3 class="title">Internal
+                    <br>Projects
+                </h3>
+                <a href="#modal-internal" class="btn-CTA btn-internal-projects">
+                    <span class="wrap">
+                        VIEW MORE
+                        <i><img src="assets/svg/icon/theme=chavron.svg" alt="" aria-hidden="true"></i>
+                    </span>
+                </a>
+            </div>
+
+            <div class="img-placeholder">
+                <img src="assets/img/intenal-projects_img.jpg" alt="Internal Projects 대표 이미지">
+            </div>
+        </article>
+
+        <article class="personal-projects">
+            <div class="title-btn1">
+                <h3 class="title">Personal <br>Projects
+                </h3>
+                <a href="#modal-personal" class="btn-CTA btn-personal-projects">
+                    <span class="wrap">
+                        VIEW MORE
+                        <i><img src="assets/svg/icon/theme=chavron.svg" alt="" aria-hidden="true"></i>
+                    </span>
+                </a>
+            </div>
+
+            <div class="img-placeholder">
+                <img src="assets/img/personal-projects_img.jpg" alt="Personal Projects 대표 이미지">
+            </div>
+        </article>
+    </section>
+
+    <footer>
+        <div class="info">
+            <div id="contact" class="box2 contact">
+                <p class="title">contact</p>
+                <div class="content">
+                    <address class="txt">
+                        jayworkofficial23@gmail.com
+                    </address>
+                    <i class="icon"><a href="#" aria-label="이메일 주소 복사"><img src="assets/svg/icon/theme=copy.svg"
+                                alt="" aria-hidden="true"></a></i>
+                </div>
+            </div>
+
+            <div class="box2 copyright">
+                <p class="title">copyright</p>
+
+                <div class="content">
+                    <p class="txt">©2026 munzy ARCHIVE.<br>ALL RIGHTS RESERVED.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer-wordmark">
+            <img src="assets/logo/color=lightgreen.svg" alt="MUNZY ARCHIVE 푸터 워드마크 로고">
+        </div>
+    </footer>
+
+    <!-- Internal Project Modal Placeholder -->
+    <div id="modal-internal" class="modal-placeholder modal-projects" role="dialog" aria-modal="true"
+        aria-labelledby="modal-internal-title" aria-hidden="true">
+        <div class="top">
+            <h2 class="title" id="modal-internal-title">
+                Internal Projects
+            </h2>
+            <button class="btn-close" aria-label="Close modal">
+                <span class="icon-close" aria-hidden="true"></span>
+            </button>
+        </div>
+
+        <ul class="project-list-up">
+            <li class="box3">
+                <div class="title-wrap">
+                    <p class="sub-title">Website</p>
+                    <h3 class="title">CJS&S JAPAN</h3>
+                </div>
+                <div class="contents-wrap">
+                    <div class="img-placeholder">
+                        <img src="assets/img/intenal-projects/cjs&s-japan.jpg" alt="CJS&S JAPAN 프로젝트 미리보기 이미지">
+                    </div>
+                    <div class="copy-wrap">
+                        <p class="des">
+                            일본 기업 CJS&S JAPAN의 브랜드 가치와 핵심 사업, 주요 프로젝트를 효과적으로 전달하는 기업 소개 홈페이지를 기획부터 디자인, 구현 및 사이트 배포까지
+                            전반적으로 수행.<br>
+                            -WORK : PLANNING, DESIGN, DEVELOPMENT<br>
+                            -PERIOD : 2025.09.08 - 2025.09.15, 2026.02.24 - 2026.02-26<br>
+                            -CONTRIBUTION : 100%
+                        </p>
+                        <div class="btn-wrap">
+                            <a href="https://cjjapan.com" class="btn-CTA" target="_blank" rel="noopener noreferrer">
+                                <span class="wrap">
+                                    visit site
+                                    <i><img src="assets/svg/icon/theme=chavron.svg" alt="" aria-hidden="true"></i>
+                                </span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </li>
+            <li class="box3">
+                <div class="title-wrap">
+                    <p class="sub-title">Website, App</p>
+                    <h3 class="title">Titan Station</h3>
+                </div>
+                <div class="contents-wrap">
+                    <div class="img-placeholder">
+                        <img src="assets/img/intenal-projects/titan-station.jpg" alt="Titan Station 프로젝트 미리보기 이미지">
+                    </div>
+                    <div class="copy-wrap">
+                        <p class="des">
+                            타이탄 생태계 스테이션 TITAN STATION과 게임 서비스 DRAGON KEEPERS의 홈페이지 제작, 앱 프로토타입 구현, 웹 배포까지 전 과정을 수행. 플랫폼
+                            허브 구조 설계, 게임 시스템 소개 콘텐츠 구성, 인터랙션 구현, 사이트 배포까지 작업했으며, 전 제작 과정은 바이브코딩 방식으로 진행.<br>
+                            -WORK : PLANNING, DESIGN, DEVELOPMENT<br>
+                            -PERIOD : 2026.01.30 - 2026.02.12<br>
+                            -CONTRIBUTION : 80%
+                        </p>
+                        <div class="btn-wrap">
+                            <a href="https://titanstation.biz" class="btn-CTA" target="_blank" rel="noopener noreferrer">
+                                <span class="wrap">
+                                    TITAN STATION
+                                    <i><img src="assets/svg/icon/theme=chavron.svg" alt="" aria-hidden="true"></i>
+                                </span>
+                            </a>
+                            <a href="https://titanstation.biz/Dragon-Keepers" class="btn-CTA" target="_blank" rel="noopener noreferrer">
+                                <span class="wrap">
+                                    DRAGON KEEPERS
+                                    <i><img src="assets/svg/icon/theme=chavron.svg" alt="" aria-hidden="true"></i>
+                                </span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </li>
+            <li class="box3">
+                <div class="title-wrap">
+                    <p class="sub-title">Website, App</p>
+                    <h3 class="title">Raise Pet</h3>
+                </div>
+                <div class="contents-wrap">
+                    <div class="img-placeholder">
+                        <img src="assets/img/intenal-projects/raise-pet.jpg" alt="Raise Pet 프로젝트 미리보기 이미지">
+                    </div>
+                    <div class="copy-wrap">
+                        <p class="des">
+                            반려동물의 일상 기록을 보상, 콘텐츠 학습, AI 맞춤 케어, 리워드 커머스로 연결하는 펫 플랫폼의 PRD 및 기능명세서를 기획하고, 서비스 구조와 사용자 경험
+                            흐름을 정리하였으며, 해당 플랫폼을 소개하는 홈페이지 배포 및 백서를 제작한 프로젝트.<br>
+                            -WORK : PLANNING, DEVELOPMENT, PITCH DECK, WHITEPAPER<br>
+                            -PERIOD : 2025.10.13 - 2026.01.20<br>
+                            -CONTRIBUTION : 50%
+                        </p>
+                        <div class="btn-wrap">
+                            <a href="https://raisepet.biz" class="btn-CTA" target="_blank" rel="noopener noreferrer">
+                                <span class="wrap">
+                                    visit site
+                                    <i><img src="assets/svg/icon/theme=chavron.svg" alt="" aria-hidden="true"></i>
+                                </span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </li>
+            <li class="box3">
+                <div class="title-wrap">
+                    <p class="sub-title">Website</p>
+                    <h3 class="title">NexaCore</h3>
+                </div>
+                <div class="contents-wrap">
+                    <div class="img-placeholder">
+                        <img src="assets/img/intenal-projects/nexa-core.jpg" alt="NexaCore 프로젝트 미리보기 이미지">
+                    </div>
+                    <div class="copy-wrap">
+                        <p class="des">
+                            Web3 기반 글로벌 IT·디지털 솔루션 기업의 브랜드 홈페이지를 기획·개발하며, 기업 비전과 사업 영역, 법률 구조, 로드맵을 다국어 중심으로 직관적으로 구성하여
+                            사이트를 배포한 프로젝트.<br>
+                            -WORK : PLANNING, DEVELOPMENT<br>
+                            -PERIOD : 2025.08.11 - 2025.09.08<br>
+                            -CONTRIBUTION : 50%
+                        </p>
+                        <div class="btn-wrap">
+                            <a href="https://nexacore.world" class="btn-CTA" target="_blank" rel="noopener noreferrer">
+                                <span class="wrap">
+                                    visit site
+                                    <i><img src="assets/svg/icon/theme=chavron.svg" alt="" aria-hidden="true"></i>
+                                </span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </li>
+
+        </ul>
+    </div>
+
+    <!-- Personal Project Modal Placeholder -->
+    <div id="modal-personal" class="modal-placeholder modal-projects" role="dialog" aria-modal="true"
+        aria-labelledby="modal-personal-title" aria-hidden="true">
+        <div class="top">
+            <h2 class="title" id="modal-personal-title">
+                Personal Projects
+            </h2>
+            <button class="btn-close" aria-label="Close modal">
+                <span class="icon-close" aria-hidden="true"></span>
+            </button>
+        </div>
+
+        <ul class="project-list-up">
+            <li class="box3">
+                <div class="title-wrap">
+                    <p class="sub-title">Website</p>
+                    <h3 class="title">MUNZY ARCHIVE</h3>
+                </div>
+                <div class="contents-wrap">
+                    <div class="img-placeholder">
+                        <img src="assets/img/personal-projects/munzy-archive.png" alt="MUNZY ARCHIVE 프로젝트 미리보기 이미지">
+                    </div>
+                    <div class="copy-wrap">
+                        <p class="des">
+                            개인 포트폴리오를 체계적으로 정리한 홈페이지. 사이트의 전체 콘셉트 기획을 시작으로 레퍼런스 리서치, 비주얼 디자인 설계, 퍼블리싱, 구현 단계까지 전
+                            과정 담당.<br>
+                            -WORK : PLANNING, DESIGN, DEVELOPMENT<br>
+                            -PERIOD : 2026.03.21 - 2026.04.15<br>
+                            -CONTRIBUTION : 100%
+                        </p>
+                        <div class="btn-wrap">
+                            <a href="#" class="btn-CTA btn-close-modal">
+                                <span class="wrap">
+                                    GO HOME
+                                    <i><img src="assets/svg/icon/theme=chavron.svg" alt="" aria-hidden="true"></i>
+                                </span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </li>
+            <li class="box3">
+                <div class="title-wrap">
+                    <p class="sub-title">Website</p>
+                    <h3 class="title">KC (Preparing)</h3>
+                </div>
+                <div class="contents-wrap">
+                    <div class="img-placeholder">
+                        <img src="assets/img/personal-projects/kc.png" alt="KC 프로젝트 준비중 미리보기 이미지">
+                    </div>
+                    <div class="copy-wrap">
+                        <p class="des">
+                            힙합 레이블 KC 홈페이지 제작 프로젝트. UI/UX 디자이너와 함께 진행하는 협업형 프로젝트로. 사전 리서치, 비주얼라이징, 기획, 디자인 방향성 정리, 사이트
+                            구축까지 프로젝트 전반을 리드하여 진행중.<br>
+                            -WORK : PLANNING, DEVELOPMENT<br>
+                            -PERIOD : 2026.03.27 - ing ( within 2 months )<br>
+                            -CONTRIBUTION : 50%
+                        </p>
+                        <div class="btn-wrap">
+                            <a href="#" class="block-link btn-CTA">
+                                <span class="wrap">
+                                    COMMING SOON
+                                </span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </div>
+
+    <!-- js -->
+    <script src="./js/index.js"></script>
+</body>
+
+</html>

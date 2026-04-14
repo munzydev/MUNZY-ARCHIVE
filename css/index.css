@@ -1,0 +1,1025 @@
+@charset "utf-8";
+/* reset.css에서 기존의 디자인이 초기화된 상태를 기반으로, style.css에서의 전역 변수나 공통 컴포넌트들이 기본적으로 설정된 점을 참고하여서 index.css를 작성하여 디자인을 완성하도록 한다. */
+
+
+/*
+ * 4-6) Expertise 리빌 인터랙션
+ * 1) 타이틀은 줄 단위로 split 후 순차 reveal
+ * 2) 각 카드는 sub-title -> title -> des 순으로 stagger reveal
+ * 3) JS 상태 클래스(is-expertise-*)를 기준으로 제어
+ */
+#expertise .title-txt-type[data-expertise-split] {
+   --expertise-title-stagger: 100ms;
+   --expertise-title-duration: 700ms;
+   --expertise-title-ease: cubic-bezier(0.22, 1, 0.36, 1);
+   padding-top: 0.2em;
+   margin-bottom: -0.2em;
+}
+
+#expertise > .title-wrap {
+   transition:
+      transform 0.8s cubic-bezier(0.22, 1, 0.36, 1),
+      opacity 0.56s ease;
+   will-change: transform, opacity;
+}
+
+#expertise.is-expertise-prehidden > .title-wrap {
+   opacity: 0;
+   transform: translate3d(0, calc(var(--expertise-reveal-y) * 0.9), 0);
+}
+
+#expertise.is-expertise-title-active > .title-wrap {
+   opacity: 1;
+   transform: translate3d(0, 0, 0);
+}
+
+#expertise .title-txt-type[data-expertise-split] > span[data-line] {
+   display: block;
+   position: relative;
+   padding-bottom: 0.2em;
+   margin-top: -0.2em;
+   line-height: 1;
+   transform-origin: 50% 100%;
+}
+
+#expertise.is-expertise-prehidden .title-txt-type[data-expertise-split] > span[data-line] {
+   opacity: 0;
+   clip-path: inset(0 0 100% 0);
+   transform: translateY(var(--expertise-reveal-y)) skewX(8deg) scale(1.02);
+   will-change: transform, opacity, clip-path;
+}
+
+#expertise.is-expertise-title-active .title-txt-type[data-expertise-split] > span[data-line] {
+   opacity: 1;
+   clip-path: inset(0 0 0 0);
+   transform: translateY(0) skewX(0deg) scale(1);
+   transition:
+      transform var(--expertise-title-duration) var(--expertise-title-ease),
+      opacity calc(var(--expertise-title-duration) - 140ms) ease,
+      clip-path var(--expertise-title-duration) var(--expertise-title-ease);
+   transition-delay: calc(var(--expertise-title-index, 0) * var(--expertise-title-stagger));
+}
+
+#expertise .contents-wrap .contents[data-expertise-item] {
+   --expertise-item-stagger: 100ms;
+   --expertise-item-duration: 700ms;
+   --expertise-item-ease: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+#expertise .contents-wrap .contents[data-expertise-item] .sub-title,
+#expertise .contents-wrap .contents[data-expertise-item] .title,
+#expertise .contents-wrap .contents[data-expertise-item] .des {
+   display: block;
+   transform-origin: 50% 100%;
+}
+
+#expertise.is-expertise-prehidden .contents-wrap .contents[data-expertise-item] .sub-title,
+#expertise.is-expertise-prehidden .contents-wrap .contents[data-expertise-item] .title,
+#expertise.is-expertise-prehidden .contents-wrap .contents[data-expertise-item] .des {
+   opacity: 0;
+   clip-path: inset(0 0 100% 0);
+   transform: translate3d(0, var(--expertise-reveal-y), 0) skewX(calc(7deg * var(--expertise-direction, 1))) scale(1.02);
+   will-change: transform, opacity, clip-path;
+}
+
+#expertise .contents-wrap .contents[data-expertise-item].is-expertise-item-visible .sub-title,
+#expertise .contents-wrap .contents[data-expertise-item].is-expertise-item-visible .title,
+#expertise .contents-wrap .contents[data-expertise-item].is-expertise-item-visible .des {
+   opacity: 1;
+   clip-path: inset(0 0 0 0);
+   transform: translate3d(0, 0, 0) skewX(0deg) scale(1);
+   transition:
+      transform var(--expertise-item-duration) var(--expertise-item-ease),
+      opacity calc(var(--expertise-item-duration) - 160ms) ease,
+      clip-path var(--expertise-item-duration) var(--expertise-item-ease);
+   transition-delay: calc(var(--expertise-item-delay-base, 0ms) + var(--expertise-part-index, 0) * var(--expertise-item-stagger));
+}
+
+#expertise.is-expertise-reveal-complete:not(.is-expertise-inview) .contents-wrap {
+   opacity: 0.98;
+}
+
+/* =========================================================================
+   1. Header (글로벌 헤더)
+   ========================================================================= */
+/* =========================================================================
+   2. Hero (메인 비주얼)
+   ========================================================================= */
+
+/* 2-1) hero 전체 */
+#hero {
+   /* 데스크톱(큰 화면 포함) 높이를 채우고, 내부 요소를 세로로 배치합니다. */
+   aspect-ratio: 16/9;
+   width: 100%;
+   height: 100vh;
+   position: relative;
+   display: flex;
+   flex-direction: column;
+   overflow: hidden;
+   /* 배경 비디오나 화면 밖으로 넘치는 요소를 가립니다. */
+   background-color: var(--primitive-color-brand-secondary);
+   /* 비디오 재생 전이나 투명할 때의 대체 배경색 */
+   color: var(--primitive-color-neutral-white);
+}
+
+/* Hero 배경 비디오*/
+#hero .hero-bg-video {
+   position: absolute;
+   top: 0;
+   left: 0;
+   width: 100%;
+   height: 100%;
+   /* 100vh 대신 100%를 써야 최소 높이 800px까지 배경 영상이 함께 늘어납니다. */
+   object-fit: cover;
+   /* 가로세로 비율을 유지하면서 여백 없이 화면을 꽉 채웁니다. */
+   z-index: 0;
+   /* 다른 스크롤 요소들 맨 밑으로 깔아줍니다. */
+}
+
+/* 2-2) hero 네비게이션*/
+#hero .hero-nav {
+   /* 네비게이션은 상단에 떠있는 형태(오버레이)로 배치합니다. */
+   position: absolute;
+   top: 0;
+   left: 50%;
+   transform: translateX(-50%);
+   width: 100%;
+   display: flex;
+   justify-content: space-between;
+   /* 양끝단으로 메뉴 분산 */
+   align-items: center;
+   padding: 30px var(--common-space-padding-x-default);
+   /* 좌우 여백 24px (디자인 시스템 기준) */
+   z-index: 10;
+}
+
+#hero .hero-nav .wrapper  {
+   list-style: none;
+   /* 기본 불릿 제거 */
+}
+
+#hero .hero-nav .wrapper ul {
+   display: flex;
+   gap: 32px;
+   /* 메뉴 간격 */
+}
+
+#hero .hero-nav a {
+   text-decoration: none;
+   font-size: var(--primitive-typo-font-size-default-body-xs);
+   color: var(--primitive-color-neutral-white);
+   text-transform: uppercase;
+   color: var(--primitive-color-neutral-white);
+}
+
+#hero .hero-nav .site-logo {
+   /* 로고를 화면 정중앙에 고정하기 위한 기법 */
+   position: absolute;
+   left: 50%;
+   top: 50%;
+   transform: translate(-50%, -50%)
+}
+
+
+/* 2-3) hero 콘텐츠 영역 */
+#hero .contents {
+   /* 상단 네비게이션 공간(40px)을 제외하고 나머지 공간을 채웁니다. */
+   position: relative;
+   z-index: 2;
+   /* 0번에 위치한 배경 비디오 위로 요소를 올리기 위함 */
+   flex: 1;
+   display: flex;
+   flex-direction: column;
+   justify-content: end;
+   /* 타이틀은 위로, 하단 콘텐츠는 아래로 배치됩니다. */
+   width: 100%;
+   margin: 0 auto;
+   padding: 0 var(--common-space-padding-x-default) 30px;
+   /* 해당 30px은 tablet에서 24px, 모바일에서 18px */
+   /* 상단 여백은 nav보다 조금 더 크게 확보 */
+   box-sizing: border-box;
+}
+
+/* 2-4) hero 제목 */
+#hero h2.hero-title {
+   position: absolute;
+   top: 30%;
+   left: 50%;
+   transform: translate(-50%, -30%);
+   /* 타이틀을 세로로 나열하고, 타이포 가이드에 맞춰 가로 폭을 제한합니다. */
+   display: flex;
+   flex-direction: column;
+   row-gap: 20px;
+   width: 100%;
+   padding: 0 var(--common-space-padding-x-default);
+   font-weight: 400;
+   /* 화면 너비 1280px일 때 7.5vw가 96px입니다.
+       1280px 이상에서 화면이 커지면 글씨도 같이 커지고, 그 이하에서는 96px(최솟값)로 유지됩니다. */
+   font-size: max(var(--primitive-typo-font-size-default-display-1), 7.5vw);
+   /* 레퍼런스처럼 라인 이동 시 타이틀 영역 밖은 잘리도록 처리합니다. */
+   overflow: hidden;
+   overflow: clip;
+}
+
+#hero h2.hero-title span {
+   font-family: var(--font-family-serif);
+   font-size: max(var(--primitive-typo-font-size-default-display-1), 7.5vw);
+   line-height: 1;
+   /* 글자의 위아래 기본 여백을 줄여 타이트하게 붙입니다. */
+   display: block;
+   position: relative;
+   padding-bottom: 0.2em;
+   margin-top: -0.2em;
+   white-space: nowrap;
+   transform-origin: 50% 100%;
+}
+
+/* 타이포 가이드 규칙: 왼쪽-가운데-오른쪽 리듬 정렬 */
+#hero h2.hero-title span:nth-child(1) {
+   text-align: left;
+}
+
+#hero h2.hero-title span:nth-child(2) {
+   text-align: center;
+}
+
+#hero h2.hero-title span:nth-child(3) {
+   text-align: right;
+}
+
+#hero .hero-title em {
+   font-style: italic;
+}
+
+/* 2-5) hero 하단 콘텐츠*/
+#hero .btm-contents {
+   /* 비디오 영역과 텍스트(카피) 영역을 양끝으로 배치합니다. */
+   display: flex;
+   justify-content: space-between;
+   align-items: center;
+   width: 100%;
+}
+
+/* 2-6) hero 비디오*/
+#hero .video-placeholder {
+   /* 비디오 박스 사이즈 (요청한 피그마 기준에 따라 추후 수정 가능) */
+   aspect-ratio: 24/15;
+   width: clamp(240px, 17.7vw, 340px);
+   /* 1920px 해상도에서 최대 340px에 도달하도록 최적화 (17.7vw = 340/1920) */
+
+   clip-path: inset(0 round clamp(10px, 0.625vw, 12px));
+   /* 10px(1280px)부터 비례하여 확대, 최대 12px 고정 (clip-path로 GPU 레이어까지 완벽히 마스킹) */
+}
+
+#hero .video-placeholder .hero-video {
+   width: 100%;
+   height: 100%;
+   object-fit: cover;
+   clip-path: inset(0 round clamp(10px, 0.625vw, 12px));
+   /* 10px(1280px)부터 비례하여 확대, 최대 12px 고정 (clip-path로 GPU 레이어까지 완벽히 마스킹) */
+
+   /* 비디오 비율을 유지하면서 박스를 꽉 채웁니다. */
+}
+
+/* 2-7) hero 카피 */
+#hero .hero-copy {
+   /* 우측 하단 텍스트 영역 */
+   aspect-ratio: 24/15;
+   width: clamp(240px, 17.7vw, 340px);
+   /* 1920px 해상도에서 최대 340px에 도달하도록 최적화 (17.7vw = 340/1920) */
+   display: flex;
+   flex-direction: column;
+   justify-content: space-between;
+   padding: 14px 0;
+   font-family: var(--font-family-pretendard);
+   font-size: max(12px, 0.7vw);
+   /* 1280px일 때 12px, 그 이상에서는 유동적으로 확대 */
+   line-height: 1.25;
+   font-weight: 400;
+}
+
+#hero .hero-copy .txt-eng {
+   letter-spacing: -0.2px;
+   text-transform: uppercase;
+}
+
+#hero .hero-copy .txt-kor {
+   letter-spacing: -0.4px;
+   word-break: keep-all;
+   /* 한글 단어가 중간에서 끊기지 않도록 유지 */
+}
+
+/* 
+ * 2-8) Hero 리빌 인터랙션
+ * 1. JS가 #hero에 상태 클래스를 부여하면(ready/active) 라인별 리빌이 실행됩니다.
+ * 2. 타이틀 -> 하단 비디오/카피 순서로 지연(stagger)되어 등장합니다.
+ * 3. 기존 마크업은 그대로 유지하고, 상태 클래스 기반으로만 동작합니다.
+ */
+#hero .hero-title[data-hero-split] {
+   /* AUPALE 레퍼런스 Hero(TweenText) 기준: duration 700ms, line stagger 100ms */
+   --hero-stagger-delay: 100ms;
+   --hero-default-delay: 0s;
+   --hero-line-duration: 700ms;
+   --hero-line-ease: cubic-bezier(0.22, 1, 0.36, 1);
+   padding-top: 0.2em;
+   margin-bottom: -0.2em;
+}
+
+#hero.is-hero-reveal-ready .hero-title[data-hero-split] > span[data-line] {
+   opacity: 0;
+   transform: translateY(100%) skewX(10deg) scale(1.04);
+   will-change: transform, opacity;
+}
+
+#hero.is-hero-reveal-active .hero-title[data-hero-split] > span[data-line] {
+   opacity: 1;
+   transform: translateY(0%) skewX(0deg) scale(1);
+   transition:
+      transform var(--hero-line-duration) var(--hero-line-ease),
+      opacity var(--hero-line-duration) var(--hero-line-ease);
+   transition-delay: calc(var(--hero-stagger-delay) * var(--line-index, 0) + var(--hero-default-delay));
+}
+
+#hero.is-hero-reveal-ready .btm-contents .video-placeholder,
+#hero.is-hero-reveal-ready .btm-contents .hero-copy {
+   opacity: 0;
+   transform: translate3d(0, 26px, 0) scale(0.985);
+   will-change: transform, opacity;
+}
+
+#hero.is-hero-reveal-active .btm-contents .video-placeholder,
+#hero.is-hero-reveal-active .btm-contents .hero-copy {
+   opacity: 1;
+   transform: translate3d(0, 0, 0) scale(1);
+   transition:
+      transform 0.72s cubic-bezier(0.22, 1, 0.36, 1),
+      opacity 0.52s ease;
+   transition-delay: calc(var(--hero-content-index, 0) * 0.12s + 0.44s);
+}
+
+#hero .contents {
+   opacity: 1;
+}
+
+#hero.is-hero-intro-complete .contents {
+   transition: opacity 0.36s ease;
+}
+
+#hero.is-hero-intro-complete:not(.is-hero-inview) .contents {
+   opacity: 0.94;
+}
+
+
+/* =========================================================================
+   3. Intro (소개)
+   ========================================================================= */
+
+/* 3-1) intro 전체 */
+#intro {
+   /* 1) 라인 배경 2) 중앙 타이틀 3) 좌우 회전 카드 4) 하단 카피 */
+   --intro-scroll-progress: 0;
+   --intro-scroll-track-height: 340svh;
+   position: relative;
+   display: block;
+   width: 100%;
+   height: 220vh;
+   height: var(--intro-scroll-track-height);
+   padding: 0 var(--common-space-padding-x-default);
+   overflow: hidden;
+   overflow: clip;
+   background: var(--primitive-color-neutral-white) url("../assets/img/introduction_bg.png") center / cover no-repeat;
+}
+
+/* 3-2) wrapper */
+#intro .wrapper {
+   position: sticky;
+   top: 0;
+   width: min(1232px, 100%);
+   height: 100vh;
+   height: 100svh;
+   margin: 0 auto;
+   display: flex;
+   align-items: center;
+   justify-content: center;
+   padding: 48px 0;
+   box-sizing: border-box;
+}
+
+/* 3-3) intro 타이틀 */
+#intro #intro-title {
+   position: absolute;
+   left: 50%;
+   top: 50%;
+   transform: translate(-50%, -50%);
+   width: min(860px, calc(100% - 48px));
+   margin: 0;
+   display: flex;
+   flex-direction: column;
+   align-items: center;
+   gap: 8px;
+   color: var(--primitive-color-brand-primary);
+   font-family: var(--font-family-serif);
+   font-size: var(--primitive-typo-font-size-default-heading-2);
+   font-weight: 400;
+   line-height: 1.1;
+   text-align: center;
+   z-index: 2;
+}
+
+#intro #intro-title span {
+   display: block;
+   width: 100%;
+}
+
+#intro #intro-title span:nth-child(3) {
+   display: flex;
+   align-items: baseline;
+   justify-content: center;
+   gap: 20px;
+}
+
+#intro #intro-title em {
+   font-style: italic;
+   font-weight: 300;
+}
+
+/* 3-4) 이미지 플레이스홀더 */
+#intro .placeholder-wrap {
+   position: relative;
+   z-index: 1;
+   width: 100%;
+   max-width: 1232px;
+   display: flex;
+   align-items: center;
+   justify-content: space-between;
+   padding: 0 80px;
+   pointer-events: none;
+}
+
+#intro .placeholder-wrap .img-placeholder {
+   width: clamp(120px, 15.625vw, 200px);
+   aspect-ratio: 3 / 4;
+   border-radius: 16px;
+   overflow: hidden;
+   background-color: var(--primitive-color-neutral-white);
+   --intro-image-start-y: 0px;
+   --intro-image-end-y: 0px;
+   --intro-image-base-rotate: 0deg;
+   --intro-image-reveal-y: 0px;
+   --intro-image-reveal-scale: 1;
+   --intro-image-scroll-y: calc(var(--intro-image-start-y) + (var(--intro-image-end-y) - var(--intro-image-start-y)) * var(--intro-scroll-progress, 0));
+   transform: translateY(var(--intro-image-scroll-y)) rotate(var(--intro-image-base-rotate)) translate3d(0, var(--intro-image-reveal-y), 0) scale(var(--intro-image-reveal-scale));
+   transform-origin: center center;
+}
+
+/* 
+ * [Intro 섹션 이미지 플레이스홀더 반응형 위치 조정]
+ * 1. 개념: clamp(min, preferred, max) 함수를 사용하여 화면 너비에 따라 유동적으로 위치를 변경합니다.
+ * 2. 계산: 화면 1280px 기준 125px을 구현하기 위해 (125 / 1280 * 100) = 약 9.77vw 사용
+ * 3. 범위: 최소 100px에서 최대 150px까지 유연하게 조절되도록 설계되었습니다.
+ */
+#intro .placeholder-wrap .img-placeholder:nth-child(1) {
+   --intro-image-start-y: clamp(100px, 9.77vw, 150px);
+   --intro-image-end-y: clamp(-150px, -9.77vw, -100px);
+   --intro-image-base-rotate: -15deg;
+}
+
+#intro .placeholder-wrap .img-placeholder:nth-child(2) {
+   --intro-image-start-y: clamp(-150px, -9.77vw, -100px);
+   --intro-image-end-y: clamp(100px, 9.77vw, 150px);
+   --intro-image-base-rotate: 15deg;
+}
+
+#intro .placeholder-wrap .img-placeholder img {
+   width: 100%;
+   height: 100%;
+   object-fit: cover;
+}
+
+/* 3-5) intro 카피 */
+#intro .intro-copy {
+   position: absolute;
+   left: 50%;
+   bottom: 48px;
+   transform: translateX(-50%);
+   width: min(234px, 100%);
+   display: flex;
+   flex-direction: column;
+   gap: 10px;
+   color: var(--primitive-color-brand-primary);
+   font-family: var(--font-family-sans);
+   font-size: var(--primitive-typo-font-size-default-body-xs);
+   line-height: 1.25;
+   letter-spacing: -1px;
+   text-transform: uppercase;
+   text-align: center;
+   z-index: 2;
+}
+
+#intro .intro-copy p {
+   margin: 0;
+   word-break: keep-all;
+}
+
+/* 
+ * 3-6) Intro 리빌 인터랙션
+ * 1. 타이틀 라인을 줄 단위로 순차 리빌합니다.
+ * 2. 좌우 이미지는 교차 방향으로 진입한 뒤 원래 위치로 정착합니다.
+ * 3. 하단 카피는 마지막에 후행 등장시켜 메시지 흐름을 완성합니다.
+ */
+#intro #intro-title[data-intro-split] {
+   --intro-line-stagger: 90ms;
+   --intro-line-delay-base: 0s;
+   --intro-line-duration: 700ms;
+   --intro-line-ease: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+#intro.is-intro-prehidden #intro-title[data-intro-split] > span[data-line],
+#intro.is-intro-reveal-ready #intro-title[data-intro-split] > span[data-line] {
+   opacity: 0;
+   clip-path: inset(0 0 100% 0);
+   transform: translateY(28px) skewX(6deg);
+   will-change: transform, opacity, clip-path;
+}
+
+#intro.is-intro-reveal-active #intro-title[data-intro-split] > span[data-line] {
+   opacity: 1;
+   clip-path: inset(0 0 0 0);
+   transform: translateY(0) skewX(0deg);
+   transition:
+      transform var(--intro-line-duration) var(--intro-line-ease),
+      opacity calc(var(--intro-line-duration) - 140ms) ease,
+      clip-path var(--intro-line-duration) var(--intro-line-ease);
+   transition-delay: calc(var(--intro-line-stagger) * var(--intro-line-index, 0) + var(--intro-line-delay-base));
+}
+
+#intro.is-intro-prehidden .placeholder-wrap .img-placeholder,
+#intro.is-intro-reveal-ready .placeholder-wrap .img-placeholder {
+   opacity: 0;
+   will-change: transform, opacity;
+}
+
+#intro.is-intro-prehidden .placeholder-wrap .img-placeholder:nth-child(1),
+#intro.is-intro-reveal-ready .placeholder-wrap .img-placeholder:nth-child(1) {
+   --intro-image-reveal-y: clamp(18px, 3.6vw, 46px);
+   --intro-image-reveal-scale: 0.96;
+}
+
+#intro.is-intro-prehidden .placeholder-wrap .img-placeholder:nth-child(2),
+#intro.is-intro-reveal-ready .placeholder-wrap .img-placeholder:nth-child(2) {
+   --intro-image-reveal-y: clamp(-46px, -3.6vw, -18px);
+   --intro-image-reveal-scale: 0.96;
+}
+
+#intro.is-intro-reveal-active .placeholder-wrap .img-placeholder {
+   opacity: 1;
+   --intro-image-reveal-y: 0px;
+   --intro-image-reveal-scale: 1;
+}
+
+#intro.is-intro-reveal-active:not(.is-intro-reveal-complete) .placeholder-wrap .img-placeholder {
+   transition:
+      transform 0.86s cubic-bezier(0.22, 1, 0.36, 1),
+      opacity 0.52s ease;
+   transition-delay: calc(0.22s + var(--intro-image-index, 0) * 0.14s);
+}
+
+#intro.is-intro-prehidden .intro-copy,
+#intro.is-intro-reveal-ready .intro-copy {
+   opacity: 0;
+   transform: translate(-50%, 22px) scale(0.99);
+   will-change: transform, opacity;
+}
+
+#intro.is-intro-reveal-active .intro-copy {
+   opacity: 1;
+   transform: translate(-50%, 0) scale(1);
+   transition:
+      transform 0.66s cubic-bezier(0.22, 1, 0.36, 1),
+      opacity 0.48s ease;
+   transition-delay: 0.56s;
+}
+
+#intro.is-intro-prehidden .intro-copy p,
+#intro.is-intro-reveal-ready .intro-copy p {
+   opacity: 0;
+   transform: translateY(10px);
+   will-change: transform, opacity;
+}
+
+#intro.is-intro-reveal-active .intro-copy p {
+   opacity: 1;
+   transform: translateY(0);
+   transition:
+      transform 0.46s cubic-bezier(0.22, 1, 0.36, 1),
+      opacity 0.36s ease;
+   transition-delay: calc(0.64s + var(--intro-copy-index, 0) * 0.1s);
+}
+
+#intro.is-intro-reveal-complete:not(.is-intro-inview) .intro-copy {
+   opacity: 0.96;
+}
+
+
+/* =========================================================================
+   4. Expertise (전문 분야)
+   ========================================================================= */
+
+/* 4-1) expertise 전체 */
+#expertise {
+   position: relative;
+   padding: 0 10% 30%;
+   --expertise-reveal-y: 26px;
+   /* 해당 100px은 tablet, mobile에서  --common-space-padding-x-tablet과 --common-space-padding-x-mobile로 변수화시키기*/
+   background-image: url('../assets/img/expertise_bg.jpg');
+   background-size: cover;
+   background-position: center;
+   background-attachment: fixed;
+   display: flex;
+   flex-direction: column;
+   gap: 200px;
+   /* tablet, mobile 변동 요소 */
+   overflow: hidden;
+}
+
+
+/* 4-2) 타이틀 */
+#expertise>.title-wrap {
+   display: flex;
+   align-items: end;
+   height: 100vh;
+   max-height: 800px;
+   /* tablet, mobile에서는 줄일 예정 */
+}
+
+#expertise .title-txt-type {
+   color: var(--primitive-color-neutral-white);
+}
+
+#expertise .title-txt-type em {
+   font-style: italic;
+   font-weight: 300;
+}
+
+/* 4-3) 전체 콘텐츠 래퍼 */
+#expertise .contents-wrap {
+   display: flex;
+   flex-direction: column;
+   row-gap: 200px;
+   /* tablet, mobile 변동 요소, #expertise의 gap과 동일 */
+}
+
+#expertise .contents-wrap .contents {
+   display: flex;
+}
+
+#expertise .contents-wrap .contents .box1 {
+   max-width: 360px;
+}
+
+#expertise .contents-wrap .contents:nth-child(even) {
+   justify-content: end;
+}
+#expertise .contents-wrap .contents:nth-child(4) {}
+
+/* 4-4) 개별 콘텐츠*/
+
+/* 4-5) box1 컴포넌트 */
+#expertise .box1 {
+   color: var(--primitive-color-neutral-white);
+}
+
+
+#expertise .box1 .sub-title {
+   color: var(--primitive-color-brand-secondary);
+}
+
+
+#expertise .box1 .des {
+   color: var(--primitive-color-neutral-white);
+   opacity: 0.9;
+}
+
+
+/* =========================================================================
+   5. Works (프로젝트)
+   ========================================================================= */
+
+/* 5-1) works 전체 */
+#works {
+   --works-reveal-y: clamp(14px, 1.8vw, 26px);
+}
+
+#works h3.title[data-works-title][data-works-split] {
+   --works-title-stagger: 100ms;
+   --works-title-duration: 700ms;
+   --works-title-ease: cubic-bezier(0.22, 1, 0.36, 1);
+   padding-top: 0.2em;
+   margin-bottom: -0.2em;
+   overflow: hidden;
+   overflow: clip;
+}
+
+#works h3.title[data-works-title][data-works-split] > span[data-line] {
+   display: block;
+   position: relative;
+   padding-bottom: 0.2em;
+   margin-top: -0.2em;
+   line-height: 1;
+   transform-origin: 50% 100%;
+}
+
+#works.is-works-prehidden h3.title[data-works-title]:not(.is-works-title-visible) > span[data-line] {
+   opacity: 0;
+   clip-path: inset(0 0 100% 0);
+   transform: translate3d(0, var(--works-reveal-y), 0) skewX(8deg) scale(1.02);
+   will-change: transform, opacity, clip-path;
+}
+
+#works h3.title[data-works-title].is-works-title-visible > span[data-line] {
+   opacity: 1;
+   clip-path: inset(0 0 0 0);
+   transform: translate3d(0, 0, 0) skewX(0deg) scale(1);
+   transition:
+      transform var(--works-title-duration) var(--works-title-ease),
+      opacity calc(var(--works-title-duration) - 140ms) ease,
+      clip-path var(--works-title-duration) var(--works-title-ease);
+   transition-delay: calc(var(--works-title-order, 0) * 90ms + var(--works-title-index, 0) * var(--works-title-stagger));
+}
+
+#works.is-works-reveal-complete:not(.is-works-inview) .title-btn1 {
+   opacity: 0.98;
+}
+
+#works {
+   padding: var(--common-space-padding-y-default) var(--common-space-padding-x-default);
+   display: flex;
+   flex-direction: column;
+   row-gap: var(--common-space-padding-y-default);
+   /* 공통 위아래 여백과 works의 gap은 동일하게 감. */
+}
+
+#works article {
+   display: flex;
+   column-gap: 24px;
+}
+
+#works>article .title-btn1 {
+   flex: 1;
+}
+
+#works article .img-placeholder {
+   flex: 1;
+   aspect-ratio: 60/35;
+   border-radius: clamp(10px, 1.5625vw, 30px);
+   /* 1280px 기준 20px이며, 화면 너비에 따라 12px~30px 사이로 유동적으로 조절됨 */
+   overflow: hidden;
+}
+
+#works article .img-placeholder img {
+   width: 100%;
+   height: 100%;
+   object-fit: cover;
+   transform: scale(1);
+   transform-origin: center center;
+   transition: transform 720ms cubic-bezier(0.22, 1, 0.36, 1);
+   will-change: transform;
+}
+
+@media (hover: hover) and (pointer: fine) {
+   #works article .img-placeholder:hover img {
+      transform: scale(1.045);
+   }
+}
+
+/* 5-2) Internal Projects */
+
+
+
+
+
+
+
+
+
+/* 5-3) Personal Projects */
+#works article.personal-projects {
+   flex-direction: row-reverse;
+}
+
+
+
+
+
+
+
+
+
+
+/* =========================================================================
+   6. Footer (푸터)
+   ========================================================================= */
+
+/* 6-1) footer 전체 */
+footer {
+   background-color: var(--primitive-color-brand-primary);
+   padding: var(--common-space-padding-y-default) var(--common-space-padding-x-default);
+   display: flex;
+   justify-content: space-between;
+   align-items: flex-start;
+   gap: 100px; /* 로고와 info 사이 최소 간격 */
+}
+
+/* 6-2) info 영역 */
+footer .info {
+   display: flex;
+   flex-direction: column;
+   gap: 100px;
+}
+
+footer .info .box2 {
+   /* box2 공통 max-width */
+   max-width: 360px;
+
+}
+
+/* 6-3) contact (box2 컴포넌트) */
+
+
+
+footer .contact .content address.txt {
+   font-style: normal;
+}
+
+
+
+
+/* 6-4) copyright (box2 컴포넌트) */
+
+
+
+
+/* 6-5) 워드마크 */
+footer .footer-wordmark {
+   /* 더 이상 공중에 띄우지 않습니다. 옆의 Info가 밀리지 않게, 남는 공간만 영리하게 차지합니다. */
+   flex: 1;
+   min-width: 0; /* 창이 좁아지더라도 이미지가 영역 밖으로 무단 침입하지 않고 유연하게 줄어듭니다. */
+
+   max-width: 1000px;
+}
+
+footer .footer-wordmark img {
+   width: 100%;
+   height: 100%;
+   object-fit: contain; /* 비율 유지 */
+   object-position: right bottom; /* 우측 아래로 정렬 */
+}
+
+
+/* =========================================================================
+   7. modal-projects (#modal-internal, #modal-personal 공통 템플릿)
+   ========================================================================= */
+.modal-projects {
+   --modal-fade-duration: 520ms;
+   --modal-content-duration: 680ms;
+   --modal-fade-ease: cubic-bezier(0.22, 1, 0.36, 1);
+   --modal-content-ease: cubic-bezier(0.22, 1, 0.36, 1);
+   display: none;
+   position: fixed;
+   top: 0;
+   left: 0;
+   width: 100%;
+   height: 100%;
+   overflow-y: auto;
+   z-index: 10000;
+   padding: 0 50px 150px;
+   flex-direction: column;
+   align-items: flex-start;
+   gap: 100px;
+   background-color: var(--primitive-color-neutral-white);
+   opacity: 0;
+   visibility: hidden;
+   pointer-events: none;
+   transition:
+      opacity var(--modal-fade-duration) var(--modal-fade-ease),
+      visibility 0s linear var(--modal-fade-duration);
+}
+
+.modal-projects.is-active {
+   display: flex;
+   visibility: visible;
+   opacity: 0;
+   pointer-events: none;
+   transition-delay: 0s, 0s;
+}
+
+.modal-projects.is-active.is-visible {
+   opacity: 1;
+   pointer-events: auto;
+}
+
+.modal-projects .top {
+   display: flex;
+   padding: 50px 0;
+   justify-content: space-between;
+   align-items: flex-start;
+   align-self: stretch;
+   position: sticky;
+   top: 0;
+   left: 0;
+   background-color: var(--primitive-color-neutral-white);
+   z-index: 9999;
+}
+
+.modal-projects .top,
+.modal-projects .project-list-up {
+   opacity: 0;
+   transform: translate3d(0, 22px, 0);
+   transition:
+      transform var(--modal-content-duration) var(--modal-content-ease),
+      opacity calc(var(--modal-content-duration) - 180ms) ease;
+   will-change: transform, opacity;
+}
+
+.modal-projects.is-active.is-visible .top,
+.modal-projects.is-active.is-visible .project-list-up {
+   opacity: 1;
+   transform: translate3d(0, 0, 0);
+}
+
+.modal-projects .top h2.title {
+   color: var(--primitive-color-brand-primary);
+   font-feature-settings: 'liga' off, 'clig' off;
+   font-family: var(--font-family-serif);
+   font-size: var(--primitive-typo-font-size-default-display-3);
+   font-style: normal;
+   font-weight: 400;
+   line-height: normal;
+   letter-spacing: -3px;
+}
+
+.modal-projects .top button.btn-close {
+   aspect-ratio: 1/1;
+   color: var(--primitive-color-brand-primary);
+   display: inline-flex;
+   align-items: center;
+   justify-content: center;
+   width: 80px;
+}
+
+/* 모달 닫기 아이콘: 가상요소로 X(교차 라인) 형태를 그려 이미지 의존성을 제거 */
+.modal-projects .top .btn-close .icon-close {
+   display: inline-block;
+   width: 75%;
+   height: 75%;
+   position: relative;
+}
+
+.modal-projects .top .btn-close .icon-close::before,
+.modal-projects .top .btn-close .icon-close::after {
+   content: "";
+   position: absolute;
+   top: 50%;
+   left: 50%;
+   width: 100%;
+   height: 3px;
+   background-color: currentColor;
+   transform-origin: center;
+}
+
+.modal-projects .top .btn-close .icon-close::before {
+   transform: translate(-50%, -50%) rotate(30deg);
+}
+
+.modal-projects .top .btn-close .icon-close::after {
+   transform: translate(-50%, -50%) rotate(-30deg);
+}
+
+.modal-projects .project-list-up {
+   display: flex;
+   flex-direction: column;
+   align-items: flex-start;
+   gap: 100px;
+   align-self: stretch;
+}
+
+
+
+.modal-projects .project-list-up .box3 .title-wrap p.sub-title {
+   font-size: var(--primitive-typo-font-size-default-body-2xl);
+}
+
+.modal-projects .project-list-up .box3 .title-wrap h3.title {
+   font-size: var(--primitive-typo-font-size-default-heading-1);
+}
+
+
+
+
+
+
+
+
+.modal-projects .project-list-up .box3 .contents-wrap .copy-wrap .btn-wrap .btn-CTA.block-link {
+   border: 0;
+}

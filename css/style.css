@@ -1,0 +1,609 @@
+@charset "utf-8";
+
+/* =========================================
+   전역 CSS 변수 (Figma web.tokens.json)
+   ========================================= */
+:root {
+    /* 1) Color Tokens */
+    --primitive-color-brand-primary: #35483f;
+    --primitive-color-brand-secondary: #d2d9d8;
+    --primitive-color-neutral-white: #ffffff;
+
+    /* 2) Typography Tokens - default(default) */
+    --primitive-typo-font-size-default-display-1: 96px;
+    --primitive-typo-font-size-default-display-2: 96px;
+    --primitive-typo-font-size-default-display-3: 96px;
+    --primitive-typo-font-size-default-heading-1: 80px;
+    --primitive-typo-font-size-default-heading-2: 64px;
+    --primitive-typo-font-size-default-heading-3: 50px;
+    --primitive-typo-font-size-default-body-2xl: 30px;
+    --primitive-typo-font-size-default-body-xl: 28px;
+    --primitive-typo-font-size-default-body-lg: 22px;
+    --primitive-typo-font-size-default-body-md: 22px;
+    --primitive-typo-font-size-default-body-sm: 18px;
+    --primitive-typo-font-size-default-body-xs: 16px;
+
+    /* 3) Typography Tokens - Tablet */
+    --primitive-typo-font-size-tablet-display-1: 64px;
+    --primitive-typo-font-size-tablet-display-2: 88px;
+    --primitive-typo-font-size-tablet-display-3: 70px;
+    --primitive-typo-font-size-tablet-heading-1: 64px;
+    --primitive-typo-font-size-tablet-heading-2: 50px;
+    --primitive-typo-font-size-tablet-heading-3: 46px;
+    --primitive-typo-font-size-tablet-body-2xl: 28px;
+    --primitive-typo-font-size-tablet-body-xl: 26px;
+    --primitive-typo-font-size-tablet-body-lg: 22px;
+    --primitive-typo-font-size-tablet-body-md: 20px;
+    --primitive-typo-font-size-tablet-body-sm: 16px;
+    --primitive-typo-font-size-tablet-body-xs: 14px;
+
+    /* 4) Typography Tokens - Mobile */
+    --primitive-typo-font-size-mobile-display-1: 36px;
+    --primitive-typo-font-size-mobile-display-2: 62px;
+    --primitive-typo-font-size-mobile-display-3: 50px;
+    --primitive-typo-font-size-mobile-heading-1: 44px;
+    --primitive-typo-font-size-mobile-heading-2: 32px;
+    --primitive-typo-font-size-mobile-heading-3: 40px;
+    --primitive-typo-font-size-mobile-body-2xl: 24px;
+    --primitive-typo-font-size-mobile-body-xl: 22px;
+    --primitive-typo-font-size-mobile-body-lg: 18px;
+    --primitive-typo-font-size-mobile-body-md: 16px;
+    --primitive-typo-font-size-mobile-body-sm: 14px;
+    --primitive-typo-font-size-mobile-body-xs: 12px;
+
+    /* 5) Component Alias Tokens */
+    --component-header-contact-default: 11px;
+    --component-header-contact-tablet: 11px;
+    --component-header-contact-mobile: 8px;
+
+    /* 6) Font Family Tokens */
+    --font-family-serif: "Newsreader", serif;
+    --font-family-sans: "Orbit", "Noto Sans KR", "Pretendard", sans-serif;
+    /* Space Grotesk는 영문 전용이므로, 한글이 나왔을 때 깨지지 않도록 한글 폰트(Pretendard 등)를 뒤에 붙여 방어막을 칩니다. */
+    --font-family-space: "Space Grotesk", "Pretendard", "Noto Sans KR", sans-serif;
+    --font-family-pretendard: "Pretendard", "Noto Sans KR", "Orbit", sans-serif;
+
+    /* 7) padding */
+    /* padding 전체에 적용시, y - x 순 */
+    /* 공통 좌우 여백 space-padding-x */
+    --common-space-padding-x-default: 24px;
+    --common-space-padding-x-tablet: 24px;
+    --common-space-padding-x-mobile: 20px;
+
+    /* 공통 위아래 여백 space-padding-y */
+    --common-space-padding-y-default: 140px;
+    --common-space-padding-y-tablet: 120px;
+    --common-space-padding-y-mobile: 100px;
+}
+
+/* =========================================
+   Base
+   ========================================= */
+html,
+body {
+    color: var(--primitive-color-brand-primary);
+    font-family: var(--font-family-sans);
+}
+
+img,
+video {
+    display: block;
+    height: auto;
+    width: 100%;
+}
+
+/* =========================================
+   공통 컴포넌트 모음
+   ========================================= */
+.btn-CTA {
+    align-items: center;
+    border-bottom: 1px solid var(--primitive-color-brand-primary);
+    display: inline-flex;
+    padding: 0 2px 8px;
+    text-transform: uppercase;
+}
+
+.btn-CTA:focus-visible,
+.btn-menu-toggle:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 2px;
+}
+
+.btn-CTA .wrap {
+    column-gap: 2px;
+    display: inline-flex;
+    font-size: var(--primitive-typo-font-size-default-body-lg);
+    line-height: 25px;
+    letter-spacing: -1px;
+    white-space: nowrap;
+    align-items: center;
+}
+
+.btn-CTA .wrap i {
+    align-items: center;
+    display: inline-flex;
+    width: 28px;
+    height: 28px;
+    justify-content: center;
+    overflow: clip;
+}
+
+.btn-CTA .wrap i img {
+    height: 100%;
+    object-fit: contain;
+    width: 100%;
+}
+
+/* =========================================
+   공통
+   Header
+   ========================================= */
+.global-header {
+    margin: 0 auto;
+    padding: 20px 30px;
+    width: min(748px, 100%);
+    position: fixed;
+    top: 0;
+    left: 50%;
+    opacity: 0;
+    pointer-events: none;
+    transform: translate(-50%, -120%);
+    transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.3s ease, visibility 0s linear 0.55s;
+    visibility: hidden;
+    z-index: 10000;
+}
+
+.global-header.is-active {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translate(-50%, 0);
+    transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.35s ease, visibility 0s linear 0s;
+    visibility: visible;
+}
+
+.global-header .header-wrapper {
+    background: var(--primitive-color-brand-secondary);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.global-header .header-primary {
+    align-items: center;
+    border-radius: 8px;
+    display: flex;
+    justify-content: space-between;
+    padding: 24px;
+    position: relative;
+}
+
+.global-header .header-primary p {
+    margin: 0;
+}
+
+.global-header .header-primary p,
+.global-header .header-primary p a {
+    font-size: var(--component-header-contact-default);
+    letter-spacing: -0.6px;
+    line-height: 1;
+}
+
+.global-header .site-logo {
+    overflow: clip;
+}
+
+.global-header .header-primary .site-logo {
+    height: 40px;
+    left: 50%;
+    position: absolute;
+    top: 50%;
+    transform: translate(-50%, -50%) translateY(0) scale(1);
+    transform-origin: center;
+    transition: transform 0.42s cubic-bezier(0.22, 1, 0.36, 1);
+    will-change: transform;
+    width: 50px;
+}
+
+.global-header.is-menu-open .header-primary .site-logo {
+    transform: translate(-50%, -50%) translateY(20px) scale(1.8);
+}
+
+.global-header.is-menu-closing .header-primary .site-logo {
+    transition-duration: 0.38s;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.global-header .header-primary .site-logo img {
+    height: 100%;
+    object-fit: contain;
+    width: 100%;
+}
+
+.global-header .btn-menu-toggle {
+    align-items: center;
+    color: var(--primitive-color-brand-primary);
+    display: inline-flex;
+    height: 24px;
+    justify-content: center;
+    position: relative;
+    width: 24px;
+}
+
+/* 메뉴 토글 아이콘: 가상요소(::before, ::after) + 중앙 라인(.line)으로 햄버거/닫기(X) 전환 */
+.global-header .btn-menu-toggle .icon-wrapper {
+    display: inline-block;
+    height: 24px;
+    position: relative;
+    width: 24px;
+}
+
+.global-header .btn-menu-toggle .icon-wrapper::before,
+.global-header .btn-menu-toggle .icon-wrapper::after,
+.global-header .btn-menu-toggle .icon-wrapper .line {
+    background-color: currentColor;
+    border-radius: 999px;
+    height: 2px;
+    left: 0;
+    position: absolute;
+    top: 50%;
+    transform-origin: center;
+    transition: transform 0.34s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.2s ease;
+    width: 100%;
+}
+
+.global-header .btn-menu-toggle .icon-wrapper::before,
+.global-header .btn-menu-toggle .icon-wrapper::after {
+    content: "";
+}
+
+.global-header .btn-menu-toggle .icon-wrapper::before {
+    transform: translateY(-7px);
+}
+
+.global-header .btn-menu-toggle .icon-wrapper .line {
+    transform: translateY(0);
+}
+
+.global-header .btn-menu-toggle .icon-wrapper::after {
+    transform: translateY(7px);
+}
+
+.global-header.is-menu-open .btn-menu-toggle .icon-wrapper::before {
+    transform: translateY(0) rotate(45deg);
+}
+
+.global-header.is-menu-open .btn-menu-toggle .icon-wrapper .line {
+    opacity: 0;
+    transform: translateY(0) scaleX(0.2);
+}
+
+.global-header.is-menu-open .btn-menu-toggle .icon-wrapper::after {
+    transform: translateY(0) rotate(-45deg);
+}
+
+.global-header .header-secondary {
+    display: none;
+    height: 0;
+    margin-top: 0;
+    overflow: clip;
+    pointer-events: none;
+    transform: translateY(-6px);
+    transition: height 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.18s ease-out, transform 0.28s cubic-bezier(0.4, 0, 0.2, 1), visibility 0s linear 0.4s;
+    visibility: hidden;
+    will-change: height, opacity, transform;
+}
+
+.global-header .header-secondary .header-secondary-inner {
+    padding: 44px 24px 24px;
+}
+
+.global-header.is-menu-open .header-secondary,
+.global-header.is-menu-closing .header-secondary {
+    display: block;
+    transform: translateY(0);
+    visibility: visible;
+}
+
+.global-header.is-menu-open .header-secondary {
+    pointer-events: auto;
+    transition: height 0.45s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.35s ease 0.05s, transform 0.45s cubic-bezier(0.22, 1, 0.36, 1), visibility 0s linear 0s;
+}
+
+.global-header.is-menu-closing .header-secondary {
+    pointer-events: none;
+    transition: height 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.18s ease-out, transform 0.28s cubic-bezier(0.4, 0, 0.2, 1), visibility 0s linear 0.4s;
+}
+
+.global-header .header-secondary ul {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    width: 100%;
+}
+
+.global-header .header-secondary li a {
+    border-bottom: 1px solid var(--primitive-color-brand-primary);
+    font-size: var(--primitive-typo-font-size-default-body-xl);
+    letter-spacing: -1px;
+    line-height: 28px;
+    opacity: 0;
+    padding: 0 2px 8px;
+    text-transform: uppercase;
+    transform: translateY(10px) scale(0.985);
+    transition: opacity 0.28s ease, transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.global-header.is-menu-open .header-secondary li a {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+}
+
+.global-header.is-menu-closing .header-secondary li a {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+}
+
+.global-header.is-menu-open .header-secondary ul li:nth-child(1)>a {
+    transition-delay: 0.08s;
+}
+
+.global-header.is-menu-open .header-secondary ul li:nth-child(2)>a {
+    transition-delay: 0.13s;
+}
+
+.global-header.is-menu-open .header-secondary ul li:nth-child(3)>a {
+    transition-delay: 0.18s;
+}
+
+.global-header.is-menu-open .header-secondary ul li:nth-child(4)>a {
+    transition-delay: 0.23s;
+}
+
+/* =========================================
+   공통
+   Hero Nav
+   ========================================= */
+.hero-nav {
+    align-items: center;
+    display: flex;
+    justify-content: center;
+    margin: 0 auto;
+    min-height: 110px;
+    padding: 38px 50px;
+    width: min(800px, 100%);
+}
+
+.hero-nav .site-logo {
+    width: 62px;
+    overflow: clip;
+}
+
+.hero-nav .site-logo img {
+    height: 100%;
+    object-fit: contain;
+    width: 100%;
+}
+
+/* =========================================
+   공통
+   title-txt-type / box1 / title-btn1 / box2 / box3
+   ========================================= */
+.title-txt-type {
+    color: var(--primitive-color-brand-primary);
+    font-family: var(--font-family-serif);
+    font-size: var(--primitive-typo-font-size-default-display-2);
+    font-weight: 400;
+    line-height: 1;
+    margin: 0;
+}
+
+.title-txt-type em {
+    font-style: italic;
+    font-weight: 500;
+}
+
+.box1 {
+    align-items: flex-start;
+    color: var(--primitive-color-neutral-white);
+    display: flex;
+    flex-direction: column;
+    font-family: var(--font-family-sans);
+    gap: 16px;
+    width: 100%;
+    max-width: 360px;
+}
+
+.box1 .title-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 36px;
+}
+
+.box1 .sub-title,
+.box1 .des {
+    font-size: var(--primitive-typo-font-size-default-body-xs);
+    letter-spacing: -0.05em;
+    line-height: 1.25;
+    text-transform: uppercase;
+}
+
+.box1 .title {
+    font-family: var(--font-family-serif);
+    font-size: var(--primitive-typo-font-size-default-heading-3);
+    font-weight: 400;
+    letter-spacing: -3px;
+    margin: 0;
+}
+
+.title-btn1 {
+    align-items: flex-start;
+    color: var(--primitive-color-brand-primary);
+    display: flex;
+    flex-direction: column;
+    font-family: var(--font-family-sans);
+    gap: 30px;
+}
+
+.title-btn1 .title {
+    font-family: var(--font-family-serif);
+    font-size: var(--primitive-typo-font-size-default-display-3);
+    font-weight: 400;
+    letter-spacing: -3px;
+    line-height: 1;
+    margin: 0;
+}
+
+.box2 {
+    align-items: flex-start;
+    color: var(--primitive-color-brand-secondary);
+    display: flex;
+    flex-direction: column;
+    font-family: var(--font-family-sans);
+    gap: 20px;
+    width: 100%;
+}
+
+.box2 .title {
+    font-size: var(--primitive-typo-font-size-default-body-md);
+    letter-spacing: -0.6px;
+    line-height: 1.25;
+    margin: 0;
+    text-transform: uppercase;
+    width: 100%;
+}
+
+.box2 .content {
+    align-items: center;
+    border-top: 1px solid var(--primitive-color-brand-secondary);
+    display: flex;
+    padding-top: 20px;
+    width: 100%;
+    gap: 10px;
+}
+
+.box2 .txt {
+    flex: 1 0 0;
+    font-size: var(--primitive-typo-font-size-default-body-sm);
+    letter-spacing: -0.8px;
+    line-height: 1.25;
+    margin: 0;
+    text-transform: uppercase;
+}
+
+.box2 .icon {
+    align-items: center;
+    display: inline-flex;
+    height: 24px;
+    justify-content: center;
+    overflow: clip;
+    width: 24px;
+}
+
+.box2 .icon a {
+    align-items: center;
+    display: inline-flex;
+    height: 100%;
+    justify-content: center;
+    width: 100%;
+}
+
+.box2 .icon img {
+    height: 100%;
+    object-fit: contain;
+    width: 100%;
+}
+
+.box3 {
+    display: flex;
+    padding-bottom: 100px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 30px;
+    align-self: stretch;
+
+    border-bottom: 1px solid var(--primitive-color-brand-primary);
+}
+
+.box3 .title-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+}
+
+.box3 .title-wrap p.sub-title {
+    color: var(--primitive-color-brand-primary);
+    font-feature-settings: 'liga' off, 'clig' off;
+    font-family: var(--font-family-sans);
+    font-size: var(--primitive-typo-font-size-default-body-2xl);
+    font-weight: 400;
+    line-height: 125%;
+    letter-spacing: -1.2px;
+    text-transform: uppercase;
+}
+
+.box3 .title-wrap h3.title {
+    color: var(--primitive-color-brand-primary);
+    font-feature-settings: 'liga' off, 'clig' off;
+    font-family: var(--font-family-serif);
+    font-size: var(--primitive-typo-font-size-default-heading-1);
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+    letter-spacing: -2px;
+}
+
+.box3 .contents-wrap {
+    display: flex;
+    align-items: flex-start;
+    gap: 30px;
+    align-self: stretch;
+}
+
+.box3 .contents-wrap .img-placeholder {
+    flex: 1 0 0;
+    aspect-ratio: 40/21;
+    overflow: hidden;
+    border-radius: clamp(6px, 0.78125vw, 16px);
+    /* 1280px 기준 10px이며, 화면 너비에 따라 6px~16px 사이로 유동적으로 조절됨 */
+}
+
+
+.box3 .contents-wrap .copy-wrap {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex: 1 0 0;
+    align-self: stretch;
+}
+
+.box3 .contents-wrap .copy-wrap p.des {
+    color: var(--primitive-color-brand-primary);
+    font-feature-settings: 'liga' off, 'clig' off;
+    font-family: var(--font-family-sans);
+    /* 
+       [반응형 타이포그래피 설정]
+       최소 22px을 유지하되, 화면 너비가 1280px을 넘어서면 1.71875vw 비율로 유동적으로 커지며, 
+       최대 28px까지만 확장되도록 제한하여 가독성과 심미성을 동시에 확보함.
+    */
+    font-size: clamp(var(--primitive-typo-font-size-default-body-lg), 1.71875vw, 28px);
+    font-style: normal;
+    font-weight: 400;
+    line-height: 125%;
+    /* 27.5px */
+    letter-spacing: -1.2px;
+    text-transform: uppercase;
+}
+
+.box3 .contents-wrap .copy-wrap .btn-wrap {
+    display: flex;
+    align-items: flex-start;
+    gap: 30px;
+}
+
+
+.box3 .contents-wrap .copy-wrap .btn-wrap a.block-link {
+    /* 준비중인 프로젝트의 경우 클래스명에 block-link를 추가한다. (KC)
+    해당 버튼은 투명도 50%, 링크 연결 및 마우스 hover 시 커서가 바뀌지 않게 설정한다. */
+    opacity: 50%;
+}
