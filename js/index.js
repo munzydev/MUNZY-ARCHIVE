@@ -1279,6 +1279,7 @@ function initIntroImageScrollSwap() {
     }
 
     const reducedMotionMediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const introScrollSwapForceMediaQuery = window.matchMedia('(max-width: 1279px)');
     let isScrollTicking = false;
     let isScrollSwapEventsBound = false;
     let visualIntroProgress = 0;
@@ -1444,8 +1445,17 @@ function initIntroImageScrollSwap() {
         isScrollSwapEventsBound = false;
     };
 
-    const handleReducedMotionChange = () => {
-        if (reducedMotionMediaQuery.matches) {
+    /*
+     * [Intro 카드 스크롤 진행값 안전 기준]
+     * 1) 모바일/태블릿(<=1279px): reduced-motion 환경에서도 PC 축소 뷰와 동일하게 진행값 갱신
+     * 2) 데스크톱(>=1280px): reduced-motion이면 진행값을 고정해 기존 접근성 정책 유지
+     */
+    const getShouldFreezeIntroSwap = () => {
+        return reducedMotionMediaQuery.matches && !introScrollSwapForceMediaQuery.matches;
+    };
+
+    const applyIntroScrollSwapMode = () => {
+        if (getShouldFreezeIntroSwap()) {
             unbindScrollSwapEvents();
             applyStaticScrollProgress();
             return;
@@ -1455,17 +1465,26 @@ function initIntroImageScrollSwap() {
         syncProgressImmediately();
     };
 
-    if (reducedMotionMediaQuery.matches) {
-        applyStaticScrollProgress();
-    } else {
-        bindScrollSwapEvents();
-        syncProgressImmediately();
-    }
+    const handleReducedMotionChange = () => {
+        applyIntroScrollSwapMode();
+    };
+
+    const handleIntroScrollSwapBreakpointChange = () => {
+        applyIntroScrollSwapMode();
+    };
+
+    applyIntroScrollSwapMode();
 
     if (typeof reducedMotionMediaQuery.addEventListener === 'function') {
         reducedMotionMediaQuery.addEventListener('change', handleReducedMotionChange);
     } else if (typeof reducedMotionMediaQuery.addListener === 'function') {
         reducedMotionMediaQuery.addListener(handleReducedMotionChange);
+    }
+
+    if (typeof introScrollSwapForceMediaQuery.addEventListener === 'function') {
+        introScrollSwapForceMediaQuery.addEventListener('change', handleIntroScrollSwapBreakpointChange);
+    } else if (typeof introScrollSwapForceMediaQuery.addListener === 'function') {
+        introScrollSwapForceMediaQuery.addListener(handleIntroScrollSwapBreakpointChange);
     }
 
     window.addEventListener('beforeunload', () => {
@@ -1476,6 +1495,12 @@ function initIntroImageScrollSwap() {
             reducedMotionMediaQuery.removeEventListener('change', handleReducedMotionChange);
         } else if (typeof reducedMotionMediaQuery.removeListener === 'function') {
             reducedMotionMediaQuery.removeListener(handleReducedMotionChange);
+        }
+
+        if (typeof introScrollSwapForceMediaQuery.removeEventListener === 'function') {
+            introScrollSwapForceMediaQuery.removeEventListener('change', handleIntroScrollSwapBreakpointChange);
+        } else if (typeof introScrollSwapForceMediaQuery.removeListener === 'function') {
+            introScrollSwapForceMediaQuery.removeListener(handleIntroScrollSwapBreakpointChange);
         }
     });
 }

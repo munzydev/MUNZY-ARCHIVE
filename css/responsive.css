@@ -716,13 +716,19 @@
 
     #intro.is-intro-prehidden #intro-title span,
     #intro.is-intro-reveal-ready #intro-title span,
-    #intro.is-intro-prehidden .intro-copy,
     #intro.is-intro-prehidden .intro-copy p,
-    #intro.is-intro-reveal-ready .intro-copy,
     #intro.is-intro-reveal-ready .intro-copy p {
         clip-path: inset(0 0 0 0) !important;
         opacity: 1 !important;
         transform: none !important;
+    }
+
+    /* reduce 모드에서도 intro-copy의 중앙 정렬 기준(translateX(-50%))은 유지 */
+    #intro.is-intro-prehidden .intro-copy,
+    #intro.is-intro-reveal-ready .intro-copy {
+        clip-path: inset(0 0 0 0) !important;
+        opacity: 1 !important;
+        transform: translate(-50%, 0) scale(1) !important;
     }
 
     #intro.is-intro-prehidden .placeholder-wrap .img-placeholder,
@@ -779,7 +785,4 @@
         transform: none !important;
     }
 
-    #intro {
-        --intro-scroll-progress: 0 !important;
-    }
 }
