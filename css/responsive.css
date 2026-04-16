@@ -243,6 +243,11 @@
     #expertise {
         padding: 0 50px var(--common-space-padding-y-default);
         --expertise-reveal-y: 20px;
+        background-image: url('../assets/img/expertise_bg_tablet.jpg');
+        background-attachment: scroll;
+        background-repeat: no-repeat;
+        background-position: center top;
+        background-size: auto 100%;
     }
 
 
@@ -600,6 +605,11 @@
     #expertise {
         padding: 0 var(--common-space-padding-x-default) var(--common-space-padding-y-default);
         --expertise-reveal-y: 14px;
+        background-image: url('../assets/img/expertise_bg_mobile.jpg');
+        background-attachment: scroll;
+        background-repeat: no-repeat;
+        background-position: center top;
+        background-size: auto 100%;
     }
 
 

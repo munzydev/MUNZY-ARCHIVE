@@ -631,7 +631,9 @@
    padding: 0 10% 30%;
    --expertise-reveal-y: 26px;
    /* 해당 100px은 tablet, mobile에서  --common-space-padding-x-tablet과 --common-space-padding-x-mobile로 변수화시키기*/
+   background-color: var(--primitive-color-brand-primary);
    background-image: url('../assets/img/expertise_bg.webp');
+   background-repeat: no-repeat;
    background-size: cover;
    background-position: center;
    background-attachment: fixed;

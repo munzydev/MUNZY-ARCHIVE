@@ -1840,7 +1840,11 @@ function initSectionScrollHandoff() {
 
     const reducedMotionMediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
     const wheelHandoffMediaQuery = window.matchMedia('(pointer: fine) and (min-width: 1024px)');
+    const touchHandoffMediaQuery = window.matchMedia('(hover: none) and (pointer: coarse)');
     const WHEEL_DELTA_THRESHOLD = 1.5;
+    const TOUCH_SWIPE_MIN_DELTA_PX = 56;
+    const TOUCH_VERTICAL_DOMINANCE_RATIO = 1.15;
+    const TOUCH_PREDICTION_GAIN = 1.1;
     const SECTION_EDGE_TOLERANCE_PX = 12;
     const SECTION_UPWARD_HANDOFF_MIN_BUFFER_PX = 32;
     const SECTION_UPWARD_HANDOFF_VIEWPORT_RATIO = 0.04;
@@ -1857,6 +1861,11 @@ function initSectionScrollHandoff() {
     let currentAnimationToken = 0;
     let wheelCooldownUntil = 0;
     let lastWheelAnimationDirection = 0;
+    let trackedTouchId = null;
+    let touchStartX = 0;
+    let touchStartY = 0;
+    let touchLastX = 0;
+    let touchLastY = 0;
     const anchorLinks = document.querySelectorAll('a[href^="#"]');
 
     const clamp = (value, min, max) => {
@@ -2161,6 +2170,125 @@ function initSectionScrollHandoff() {
         animatePageScrollTo(targetTop, direction);
     };
 
+    const resetTrackedTouch = () => {
+        trackedTouchId = null;
+        touchStartX = 0;
+        touchStartY = 0;
+        touchLastX = 0;
+        touchLastY = 0;
+    };
+
+    const findTouchById = (touchList, touchId) => {
+        if (!touchList || touchId === null) {
+            return null;
+        }
+
+        for (let touchIndex = 0; touchIndex < touchList.length; touchIndex += 1) {
+            if (touchList[touchIndex].identifier === touchId) {
+                return touchList[touchIndex];
+            }
+        }
+
+        return null;
+    };
+
+    /*
+     * 터치 디바이스(모바일/태블릿)에서만 세로 스와이프를 감지해
+     * 섹션 경계 핸드오프를 wheel과 동일한 규칙으로 적용한다.
+     */
+    const handleTouchStart = (event) => {
+        if (!touchHandoffMediaQuery.matches || isInteractionLocked() || isSectionAnimating) {
+            resetTrackedTouch();
+            return;
+        }
+
+        if (!event.touches || event.touches.length !== 1) {
+            resetTrackedTouch();
+            return;
+        }
+
+        const touch = event.touches[0];
+        trackedTouchId = touch.identifier;
+        touchStartX = touch.clientX;
+        touchStartY = touch.clientY;
+        touchLastX = touch.clientX;
+        touchLastY = touch.clientY;
+    };
+
+    const handleTouchMove = (event) => {
+        if (trackedTouchId === null) {
+            return;
+        }
+
+        const trackedTouch = findTouchById(event.touches, trackedTouchId);
+        if (!trackedTouch) {
+            return;
+        }
+
+        touchLastX = trackedTouch.clientX;
+        touchLastY = trackedTouch.clientY;
+    };
+
+    const handleTouchEnd = (event) => {
+        if (trackedTouchId === null || !touchHandoffMediaQuery.matches) {
+            resetTrackedTouch();
+            return;
+        }
+
+        const endTouch = findTouchById(event.changedTouches, trackedTouchId);
+        if (!endTouch) {
+            resetTrackedTouch();
+            return;
+        }
+
+        touchLastX = endTouch.clientX;
+        touchLastY = endTouch.clientY;
+
+        const deltaX = touchLastX - touchStartX;
+        const deltaY = touchStartY - touchLastY;
+        const absDeltaX = Math.abs(deltaX);
+        const absDeltaY = Math.abs(deltaY);
+        resetTrackedTouch();
+
+        if (absDeltaY < TOUCH_SWIPE_MIN_DELTA_PX) {
+            return;
+        }
+
+        if (absDeltaY <= absDeltaX * TOUCH_VERTICAL_DOMINANCE_RATIO) {
+            return;
+        }
+
+        if (isInteractionLocked() || isSectionAnimating) {
+            return;
+        }
+
+        const direction = deltaY > 0 ? 1 : -1;
+        const currentTime = performance.now();
+        const isReverseDirectionDuringCooldown = currentTime < wheelCooldownUntil
+            && lastWheelAnimationDirection !== 0
+            && direction !== lastWheelAnimationDirection;
+
+        if (currentTime < wheelCooldownUntil && !isReverseDirectionDuringCooldown) {
+            return;
+        }
+
+        if (isReverseDirectionDuringCooldown) {
+            wheelCooldownUntil = 0;
+        }
+
+        const predictedDeltaY = deltaY * TOUCH_PREDICTION_GAIN;
+        const targetTop = resolveWheelTargetTop(direction, predictedDeltaY);
+        if (targetTop === null) {
+            return;
+        }
+
+        animatePageScrollTo(targetTop, direction);
+    };
+
+    const handleTouchCancel = () => {
+        resetTrackedTouch();
+    };
+
     const handleAnchorClick = (event) => {
         const currentTarget = event.currentTarget;
         const hrefValue = currentTarget ? currentTarget.getAttribute('href') : null;
@@ -2181,6 +2309,10 @@ function initSectionScrollHandoff() {
     };
 
     window.addEventListener('wheel', handleWheel, { passive: false, capture: true });
+    window.addEventListener('touchstart', handleTouchStart, { passive: true, capture: true });
+    window.addEventListener('touchmove', handleTouchMove, { passive: true, capture: true });
+    window.addEventListener('touchend', handleTouchEnd, { passive: true, capture: true });
+    window.addEventListener('touchcancel', handleTouchCancel, { passive: true, capture: true });
 
     anchorLinks.forEach((anchorLink) => {
         anchorLink.addEventListener('click', handleAnchorClick);
@@ -2195,6 +2327,10 @@ function initSectionScrollHandoff() {
     window.addEventListener('beforeunload', () => {
         cancelScrollAnimation();
         window.removeEventListener('wheel', handleWheel, { capture: true });
+        window.removeEventListener('touchstart', handleTouchStart, { capture: true });
+        window.removeEventListener('touchmove', handleTouchMove, { capture: true });
+        window.removeEventListener('touchend', handleTouchEnd, { capture: true });
+        window.removeEventListener('touchcancel', handleTouchCancel, { capture: true });
 
         anchorLinks.forEach((anchorLink) => {
             anchorLink.removeEventListener('click', handleAnchorClick);
