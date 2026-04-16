@@ -1,13 +1,17 @@
 @charset "utf-8";
 
-
+/* =========================================================================
+   Tablet : 800px ~ 1279px
+   ========================================================================= */
 @media screen and (max-width: 1279px) {
 
 
-    
+    /* =========================================
+    style.css 태블릿 반응형 요소
+    ========================================= */
 
     :root {
-        
+        /* Typography Tokens */
         --primitive-typo-font-size-default-display-1: var(--primitive-typo-font-size-tablet-display-1);
         --primitive-typo-font-size-default-display-2: var(--primitive-typo-font-size-tablet-display-2);
         --primitive-typo-font-size-default-display-3: var(--primitive-typo-font-size-tablet-display-3);
@@ -21,18 +25,18 @@
         --primitive-typo-font-size-default-body-sm: var(--primitive-typo-font-size-tablet-body-sm);
         --primitive-typo-font-size-default-body-xs: var(--primitive-typo-font-size-tablet-body-xs);
 
-        
+        /* Component Alias Tokens */
         --component-header-contact-default: var(--component-header-contact-tablet);
 
-        
-        
-        
+        /* padding */
+        /* padding 전체에 적용시, y - x 순 */
+        /* 공통 좌우 여백 space-padding-x */
         --common-space-padding-x-default: var(--common-space-padding-x-tablet);
-        
+        /* 공통 위아래 여백 space-padding-y */
         --common-space-padding-y-default: var(--common-space-padding-y-tablet);
     }
 
-    
+    /* Header */
     .global-header {
         padding: 30px;
         width: min(709px, 100%);
@@ -60,7 +64,7 @@
         line-height: 26px;
     }
 
-    
+    /* Hero Nav */
     .hero-nav {
         min-height: 110px;
         padding: 38px 30px;
@@ -70,14 +74,14 @@
         width: 50px;
     }
 
-    
+    /* 공통 CTA */
     .btn-CTA {
         padding-bottom: 8px;
     }
 
 
 
-    
+    /* box1 */
     .box1 {
         gap: 16px;
         max-width: 320px;
@@ -88,14 +92,14 @@
         gap: 16px;
     }
 
-    
+    /* title-btn1 / title-txt-type */
     .title-btn1 {
         gap: 16px;
     }
 
 
 
-    
+    /* box2 */
     .box2 {
         gap: 16px;
     }
@@ -106,7 +110,7 @@
     }
 
 
-    
+    /* box3 */
     .box3 {
         gap: 10px;
         padding-bottom: 70px;
@@ -129,7 +133,9 @@
 
 
 
-    
+    /* =========================================
+    index.css 태블릿 반응형 요소
+    ========================================= */
 
 
 
@@ -164,7 +170,7 @@
 
     #hero .video-placeholder {
         width: clamp(208px, 6.68vw + 154.6px, 240px);
-        
+        /* 뷰포트 800px일 때 208px, 1279px일 때 240px로 유동적으로 변화 */
         clip-path: inset(0 round clamp(8px, 0.4175vw + 4.66px, 10px));
 
     }
@@ -177,7 +183,7 @@
         width: clamp(208px, 6.68vw + 154.6px, 240px);
         padding: 6px 0;
         font-size: clamp(11px, 0.2088vw + 9.33px, 12px);
-        
+        /* 뷰포트 800px일 때 11px, 1279px일 때 12px로 유동적으로 변화 */
     }
 
     #hero.is-hero-reveal-ready .btm-contents .video-placeholder,
@@ -209,9 +215,13 @@
     }
 
     #intro .placeholder-wrap .img-placeholder {
-        
+        /* 
+         * [Intro 섹션 이미지 플레이스홀더 너비 조정]
+         * 1. 계산: 화면 800px 기준 160px을 구현하기 위해 (160 / 800 * 100) = 20vw 사용
+         * 2. 범위: 최소 160px에서 최대 200px까지 유동적으로 변화하며, 1000px 이상에서는 200px로 고정됩니다.
+         */
         width: clamp(160px, 20vw, 200px);
-        
+        /* 최소 160px, 1279px일 때 200px로 유동적으로 변화 */
         border-radius: 10px;
     }
 
@@ -275,7 +285,7 @@
 
 
 
-    
+    /* works 영역 내부에서 CTA가 작은 변형일 때 */
 
 
 
@@ -309,12 +319,12 @@
 
     .modal-projects .top h2.title {
         font-size: clamp(var(--primitive-typo-font-size-default-display-3), 5.428vw + 26.6px, 96px);
-        
+        /* 뷰포트 800px일 때 Display 3(70px), 1279px일 때 96px로 유동적으로 변화 */
     }
 
     .modal-projects .top button.btn-close {
         width: clamp(60px, 4.175vw + 26.6px, 80px);
-        
+        /* 뷰포트 800px일 때 60px, 1279px일 때 80px로 유동적으로 변화 */
     }
 
     .modal-projects .top .btn-close .icon-close::before,
@@ -327,13 +337,17 @@
 
 
 
-
+/* =========================================================================
+   Mobile : 1px ~ 799px
+   ========================================================================= */
 @media screen and (max-width: 799px) {
 
-    
+    /* =========================================
+    style.css 모바일 반응형 요소
+    ========================================= */
 
     :root {
-        
+        /* Typography Tokens */
         --primitive-typo-font-size-default-display-1: var(--primitive-typo-font-size-mobile-display-1);
         --primitive-typo-font-size-default-display-2: var(--primitive-typo-font-size-mobile-display-2);
         --primitive-typo-font-size-default-display-3: var(--primitive-typo-font-size-mobile-display-3);
@@ -347,21 +361,21 @@
         --primitive-typo-font-size-default-body-sm: var(--primitive-typo-font-size-mobile-body-sm);
         --primitive-typo-font-size-default-body-xs: var(--primitive-typo-font-size-mobile-body-xs);
 
-        
+        /* Component Alias Tokens */
         --component-header-contact-default: var(--component-header-contact-mobile);
 
-        
-        
-        
+        /* padding */
+        /* padding 전체에 적용시, y - x 순 */
+        /* 공통 좌우 여백 space-padding-x */
         --common-space-padding-x-default: var(--common-space-padding-x-mobile);
-        
+        /* 공통 위아래 여백 space-padding-y */
         --common-space-padding-y-default: var(--common-space-padding-y-mobile);
     }
 
 
 
 
-    
+    /* Header */
     .global-header {
         opacity: 1;
         pointer-events: auto;
@@ -384,7 +398,7 @@
         width: 18px;
     }
 
-    
+    /* 모바일에서 햄버거 라인 간격을 더 촘촘하게 조정 */
     .global-header .btn-menu-toggle .icon-wrapper::before {
         transform: translateY(-5px);
     }
@@ -401,7 +415,7 @@
         line-height: 24px;
     }
 
-    
+    /* Hero Nav */
     .hero-nav {
         min-height: 78px;
         padding: 16px 20px;
@@ -412,7 +426,7 @@
         width: 30px;
     }
 
-    
+    /* 공통 CTA */
     .btn-CTA {
         padding-bottom: 6px;
     }
@@ -427,7 +441,7 @@
     }
 
 
-    
+    /* box1 */
     .box1 {
         gap: 10px;
         max-width: 260px;
@@ -438,14 +452,14 @@
         gap: 28px;
     }
 
-    
+    /* title-btn1 / title-txt-type */
     .title-btn1 {
         gap: 8px;
     }
 
 
 
-    
+    /* box2 */
     .box2 {
         gap: 14px;
         max-width: 619px;
@@ -458,7 +472,7 @@
     }
 
 
-    
+    /* box3 */
     .box3 {
         gap: 6px;
         padding-bottom: 50px;
@@ -479,7 +493,9 @@
     }
 
 
-    
+    /* =========================================
+    index.css 모바일 반응형 요소
+    ========================================= */
 
 
     .global-header {
@@ -522,7 +538,7 @@
     #hero .video-placeholder {
         clip-path: inset(0 round clamp(6px, 0.4167vw + 4.67px, 8px));
         width: clamp(144px, 13.36vw + 101.25px, 208px);
-        
+        /* 뷰포트 320px일 때 144px, 799px일 때 208px로 유동적으로 변화 */
     }
 
     #hero .video-placeholder .hero-video {
@@ -532,9 +548,9 @@
     #hero .hero-copy {
         padding: 4px 0;
         width: clamp(144px, 13.36vw + 101.25px, 208px);
-        
+        /* 뷰포트 320px일 때 144px, 799px일 때 208px로 유동적으로 변화 */
         font-size: clamp(8px, 0.6263vw + 6px, 11px);
-        
+        /* 뷰포트 320px일 때 8px, 799px일 때 11px로 유동적으로 변화 */
     }
 
     #hero.is-hero-reveal-ready .btm-contents .video-placeholder,
@@ -571,7 +587,7 @@
 
     #intro .placeholder-wrap .img-placeholder {
         width: clamp(100px, 12.5vw + 60px, 160px);
-        
+        /* 최소100px, 800px일 때 160px로 유동적으로 변화 */
         border-radius: 6px;
     }
 
@@ -609,7 +625,7 @@
 
 
     footer {
-        flex-direction: column; 
+        flex-direction: column; /* 세로 스택 구조로 변경 */
         gap: 50px;
     }
 
@@ -619,7 +635,7 @@
         margin-bottom: 0;
     }
 
-    
+    /* 모바일에서는 로고가 아래로 내려오며 영역 전체를 꽉 채우도록 설정 */
     footer .footer-wordmark {
         max-width: 100%;
         width: 100%;
@@ -638,9 +654,9 @@
 
     .modal-projects .top button.btn-close {
         width: clamp(40px, 4.1754vw + 26.64px, 60px);
-        
+        /* 40px에서 60px로 유동적으로 변화 */
         min-width: 40px;
-        
+        /* 너무 작아지지 않게 최솟값 40px 설정 */
         margin-left: 50px;
     }
 
