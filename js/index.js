@@ -1833,6 +1833,10 @@ function initSectionScrollHandoff() {
     const introSection = document.querySelector('#intro');
     const expertiseSection = document.querySelector('#expertise');
     const footerSection = document.querySelector('footer');
+    const globalHeaderElement = document.querySelector('.global-header');
+    const globalHeaderPrimaryElement = globalHeaderElement
+        ? globalHeaderElement.querySelector('.header-primary')
+        : null;
 
     if (sections.length < 2) {
         return;
@@ -1844,7 +1848,9 @@ function initSectionScrollHandoff() {
     const WHEEL_DELTA_THRESHOLD = 1.5;
     const TOUCH_SWIPE_MIN_DELTA_PX = 56;
     const TOUCH_VERTICAL_DOMINANCE_RATIO = 1.15;
-    const TOUCH_PREDICTION_GAIN = 1.1;
+    const TOUCH_DOWN_PROGRESS_THRESHOLD = 0.86;
+    const TOUCH_UP_PROGRESS_THRESHOLD = 0.18;
+    const TOUCH_SCROLL_DURATION_SCALE = 1.2;
     const SECTION_EDGE_TOLERANCE_PX = 12;
     const SECTION_UPWARD_HANDOFF_MIN_BUFFER_PX = 32;
     const SECTION_UPWARD_HANDOFF_VIEWPORT_RATIO = 0.04;
@@ -1872,6 +1878,11 @@ function initSectionScrollHandoff() {
         return Math.min(max, Math.max(min, value));
     };
 
+    const parsePixelValue = (value) => {
+        const parsedValue = Number.parseFloat(value);
+        return Number.isFinite(parsedValue) ? parsedValue : 0;
+    };
+
     const getPageScrollTop = () => {
         return window.scrollY || window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0;
     };
@@ -1889,6 +1900,34 @@ function initSectionScrollHandoff() {
 
     const getSectionPageTop = (sectionElement) => {
         return sectionElement.getBoundingClientRect().top + getPageScrollTop();
+    };
+
+    const getCollapsedGlobalHeaderOffsetPx = () => {
+        if (!globalHeaderElement || !globalHeaderPrimaryElement) {
+            return 0;
+        }
+
+        const headerStyles = window.getComputedStyle(globalHeaderElement);
+        const headerPaddingTop = parsePixelValue(headerStyles.paddingTop);
+        const headerPaddingBottom = parsePixelValue(headerStyles.paddingBottom);
+        const headerPrimaryHeight = Math.max(
+            globalHeaderPrimaryElement.offsetHeight,
+            globalHeaderPrimaryElement.getBoundingClientRect().height
+        );
+        return Math.round(headerPaddingTop + headerPaddingBottom + headerPrimaryHeight);
+    };
+
+    const getAnchorScrollOffsetPx = (anchorElement) => {
+        if (!anchorElement) {
+            return 0;
+        }
+
+        const isHeaderSecondaryAnchor = Boolean(anchorElement.closest('#header-secondary'));
+        if (!isHeaderSecondaryAnchor) {
+            return 0;
+        }
+
+        return getCollapsedGlobalHeaderOffsetPx();
     };
 
     const normalizeWheelDeltaY = (wheelEvent) => {
@@ -1962,17 +2001,21 @@ function initSectionScrollHandoff() {
         isSectionAnimating = false;
     };
 
-    const animatePageScrollTo = (targetScrollTop, animationDirection = 0) => {
+    const animatePageScrollTo = (targetScrollTop, animationDirection = 0, options = {}) => {
         const normalizedTargetScrollTop = Math.max(0, targetScrollTop);
         const startScrollTop = getPageScrollTop();
         const scrollDistance = normalizedTargetScrollTop - startScrollTop;
+        const forceSmooth = Boolean(options.forceSmooth);
+        const durationScale = Number.isFinite(options.durationScale)
+            ? clamp(options.durationScale, 0.6, 2)
+            : 1;
 
         if (Math.abs(scrollDistance) < 1) {
             setPageScrollTop(normalizedTargetScrollTop);
             return;
         }
 
-        if (reducedMotionMediaQuery.matches) {
+        if (reducedMotionMediaQuery.matches && !forceSmooth) {
             setPageScrollTop(normalizedTargetScrollTop);
             return;
         }
@@ -1983,7 +2026,7 @@ function initSectionScrollHandoff() {
         const animationToken = ++currentAnimationToken;
         const animationStartTime = performance.now();
         const animationDuration = clamp(
-            Math.abs(scrollDistance) * SCROLL_DURATION_PER_PIXEL,
+            Math.abs(scrollDistance) * SCROLL_DURATION_PER_PIXEL * durationScale,
             MIN_SCROLL_ANIMATION_MS,
             MAX_SCROLL_ANIMATION_MS
         );
@@ -2037,6 +2080,37 @@ function initSectionScrollHandoff() {
         }
 
         return currentSectionIndex;
+    };
+
+    const getSectionContext = (sectionBoundaries, scrollTopValue) => {
+        const currentSectionIndex = getCurrentSectionIndex(sectionBoundaries, scrollTopValue);
+        const currentBoundary = sectionBoundaries[currentSectionIndex];
+        const previousBoundary = currentSectionIndex > 0
+            ? sectionBoundaries[currentSectionIndex - 1]
+            : null;
+        const nextBoundary = currentSectionIndex < sectionBoundaries.length - 1
+            ? sectionBoundaries[currentSectionIndex + 1]
+            : null;
+
+        if (!currentBoundary) {
+            return null;
+        }
+
+        const fallbackBottom = Math.max(
+            currentBoundary.top + getViewportHeight(),
+            document.documentElement.scrollHeight || document.body.scrollHeight || currentBoundary.top + getViewportHeight()
+        );
+        const currentSectionBottom = nextBoundary ? nextBoundary.top : fallbackBottom;
+        const currentSectionHeight = Math.max(1, currentSectionBottom - currentBoundary.top);
+        const currentSectionProgress = clamp((scrollTopValue - currentBoundary.top) / currentSectionHeight, 0, 1);
+
+        return {
+            currentSectionIndex,
+            currentBoundary,
+            previousBoundary,
+            nextBoundary,
+            currentSectionProgress,
+        };
     };
 
     const resolveWheelTargetTop = (direction, wheelDeltaY = 0) => {
@@ -2102,13 +2176,15 @@ function initSectionScrollHandoff() {
         return null;
     };
 
-    const resolveAnchorTargetTop = (hrefValue) => {
+    const resolveAnchorTargetTop = (hrefValue, offsetTopPx = 0) => {
+        const normalizedOffsetTop = Math.max(0, offsetTopPx);
+
         if (!hrefValue || !smoothAnchorTargets.has(hrefValue)) {
             return null;
         }
 
         if (hrefValue === '#contact' && footerSection) {
-            return Math.round(getSectionPageTop(footerSection));
+            return Math.round(Math.max(0, getSectionPageTop(footerSection) - normalizedOffsetTop));
         }
 
         const targetElement = document.querySelector(hrefValue);
@@ -2116,7 +2192,7 @@ function initSectionScrollHandoff() {
             return null;
         }
 
-        return Math.round(getSectionPageTop(targetElement));
+        return Math.round(Math.max(0, getSectionPageTop(targetElement) - normalizedOffsetTop));
     };
 
     const handleWheel = (event) => {
@@ -2187,6 +2263,62 @@ function initSectionScrollHandoff() {
             if (touchList[touchIndex].identifier === touchId) {
                 return touchList[touchIndex];
             }
+        }
+
+        return null;
+    };
+
+    const resolveTouchTargetTop = (direction) => {
+        const sectionBoundaries = getSectionBoundaries();
+        const currentScrollTop = getPageScrollTop();
+        const sectionContext = getSectionContext(sectionBoundaries, currentScrollTop);
+
+        if (!sectionContext) {
+            return null;
+        }
+
+        const {
+            currentBoundary,
+            previousBoundary,
+            nextBoundary,
+            currentSectionProgress,
+        } = sectionContext;
+
+        if (direction > 0) {
+            if (!nextBoundary) {
+                return null;
+            }
+
+            if (currentBoundary.element === introSection && !isIntroVisualProgressComplete()) {
+                return null;
+            }
+
+            if (currentSectionProgress < TOUCH_DOWN_PROGRESS_THRESHOLD) {
+                return null;
+            }
+
+            return Math.round(nextBoundary.top);
+        }
+
+        if (direction < 0) {
+            if (!previousBoundary) {
+                return null;
+            }
+
+            if (currentSectionProgress > TOUCH_UP_PROGRESS_THRESHOLD) {
+                return null;
+            }
+
+            if (
+                introSection
+                && expertiseSection
+                && currentBoundary.element === expertiseSection
+                && previousBoundary.element === introSection
+            ) {
+                return Math.round(getIntroCompletionTop());
+            }
+
+            return Math.round(previousBoundary.top);
         }
 
         return null;
@@ -2276,13 +2408,14 @@ function initSectionScrollHandoff() {
             wheelCooldownUntil = 0;
         }
 
-        const predictedDeltaY = deltaY * TOUCH_PREDICTION_GAIN;
-        const targetTop = resolveWheelTargetTop(direction, predictedDeltaY);
+        const targetTop = resolveTouchTargetTop(direction);
         if (targetTop === null) {
             return;
         }
 
-        animatePageScrollTo(targetTop, direction);
+        animatePageScrollTo(targetTop, direction, {
+            durationScale: TOUCH_SCROLL_DURATION_SCALE,
+        });
     };
 
     const handleTouchCancel = () => {
@@ -2291,15 +2424,20 @@ function initSectionScrollHandoff() {
 
     const handleAnchorClick = (event) => {
         const currentTarget = event.currentTarget;
+        const anchorElement = currentTarget instanceof Element ? currentTarget : null;
         const hrefValue = currentTarget ? currentTarget.getAttribute('href') : null;
-        const targetTop = resolveAnchorTargetTop(hrefValue);
+        const anchorOffsetPx = getAnchorScrollOffsetPx(anchorElement);
+        const isHeaderSecondaryAnchor = Boolean(anchorElement && anchorElement.closest('#header-secondary'));
+        const targetTop = resolveAnchorTargetTop(hrefValue, anchorOffsetPx);
 
         if (targetTop === null) {
             return;
         }
 
         event.preventDefault();
-        animatePageScrollTo(targetTop, 0);
+        animatePageScrollTo(targetTop, 0, {
+            forceSmooth: isHeaderSecondaryAnchor,
+        });
     };
 
     const handleReducedMotionChange = () => {
