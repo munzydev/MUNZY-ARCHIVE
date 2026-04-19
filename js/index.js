@@ -1927,13 +1927,23 @@ function initSectionScrollHandoff() {
         return Math.round(headerPaddingTop + headerPaddingBottom + headerPrimaryHeight);
     };
 
-    const getAnchorScrollOffsetPx = (anchorElement) => {
+    const getAnchorScrollOffsetPx = (anchorElement, hrefValue = '') => {
         if (!anchorElement) {
             return 0;
         }
 
         const isHeaderSecondaryAnchor = Boolean(anchorElement.closest('#header-secondary'));
         if (!isHeaderSecondaryAnchor) {
+            return 0;
+        }
+
+        /*
+         * 헤더 2차 메뉴 앵커 정렬 보정:
+         * - 섹션 앵커(#hero/#intro/#expertise/#works)는 정확한 section top 정렬을 우선
+         *   (offset을 빼면 이전 섹션 영역으로 걸쳐 보일 수 있음)
+         * - #contact처럼 footer 내부 타깃은 헤더 가림을 피하기 위해 offset 유지
+         */
+        if (hrefValue === '#hero' || hrefValue === '#intro' || hrefValue === '#expertise' || hrefValue === '#works') {
             return 0;
         }
 
@@ -2485,7 +2495,7 @@ function initSectionScrollHandoff() {
         const currentTarget = event.currentTarget;
         const anchorElement = currentTarget instanceof Element ? currentTarget : null;
         const hrefValue = currentTarget ? currentTarget.getAttribute('href') : null;
-        const anchorOffsetPx = getAnchorScrollOffsetPx(anchorElement);
+        const anchorOffsetPx = getAnchorScrollOffsetPx(anchorElement, hrefValue);
         const isHeaderSecondaryAnchor = Boolean(anchorElement && anchorElement.closest('#header-secondary'));
         const targetTop = resolveAnchorTargetTop(hrefValue, anchorOffsetPx);
 
