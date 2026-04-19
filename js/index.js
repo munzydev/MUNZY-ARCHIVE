@@ -2931,9 +2931,18 @@ function createModalController({ openTriggerSelector, modalSelector }) {
     const primaryCloseButton = modal.querySelector('.btn-close');
     const MODAL_CLOSE_TRANSITION_FALLBACK_MS = 760;
     const reducedMotionMediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const modalReducedMotionParityViewportMediaQuery = window.matchMedia('(max-width: 1279px)');
+    const modalReducedMotionCoarsePointerMediaQuery = window.matchMedia('(pointer: coarse)');
     let lastActiveTrigger = null;
     let closeTransitionTimer = null;
     let openAnimationFrameId = 0;
+    let modalTransitionToken = 0;
+
+    const shouldApplyModalReducedMotionFallback = () => {
+        return reducedMotionMediaQuery.matches
+            && !modalReducedMotionParityViewportMediaQuery.matches
+            && !modalReducedMotionCoarsePointerMediaQuery.matches;
+    };
 
     const clearCloseTransitionTimer = () => {
         if (closeTransitionTimer) {
@@ -2965,7 +2974,11 @@ function createModalController({ openTriggerSelector, modalSelector }) {
         }
     };
 
-    const finalizeClose = () => {
+    const finalizeClose = (closingToken = modalTransitionToken) => {
+        if (closingToken !== modalTransitionToken) {
+            return;
+        }
+
         clearCloseTransitionTimer();
         clearOpenAnimationFrame();
 
@@ -2981,6 +2994,7 @@ function createModalController({ openTriggerSelector, modalSelector }) {
     };
 
     const open = (triggerElement) => {
+        const openToken = ++modalTransitionToken;
         lastActiveTrigger = triggerElement || document.activeElement;
 
         if (modal.classList.contains('is-active') && modal.classList.contains('is-visible')) {
@@ -2998,7 +3012,7 @@ function createModalController({ openTriggerSelector, modalSelector }) {
         modal.setAttribute('aria-hidden', 'false');
         syncBodyScrollLock();
 
-        if (reducedMotionMediaQuery.matches) {
+        if (shouldApplyModalReducedMotionFallback()) {
             modal.classList.add('is-visible');
 
             if (primaryCloseButton) {
@@ -3009,6 +3023,10 @@ function createModalController({ openTriggerSelector, modalSelector }) {
 
         openAnimationFrameId = requestAnimationFrame(() => {
             openAnimationFrameId = requestAnimationFrame(() => {
+                if (openToken !== modalTransitionToken) {
+                    return;
+                }
+
                 modal.classList.add('is-visible');
 
                 if (primaryCloseButton) {
@@ -3023,6 +3041,7 @@ function createModalController({ openTriggerSelector, modalSelector }) {
             return;
         }
 
+        const closeToken = ++modalTransitionToken;
         clearCloseTransitionTimer();
         clearOpenAnimationFrame();
 
@@ -3033,13 +3052,13 @@ function createModalController({ openTriggerSelector, modalSelector }) {
         modal.classList.remove('is-visible');
         modal.classList.add('is-closing');
 
-        if (reducedMotionMediaQuery.matches) {
-            finalizeClose();
+        if (shouldApplyModalReducedMotionFallback()) {
+            finalizeClose(closeToken);
             return;
         }
 
         closeTransitionTimer = window.setTimeout(() => {
-            finalizeClose();
+            finalizeClose(closeToken);
         }, MODAL_CLOSE_TRANSITION_FALLBACK_MS);
     };
 
@@ -3077,7 +3096,11 @@ function createModalController({ openTriggerSelector, modalSelector }) {
             return;
         }
 
-        finalizeClose();
+        if (!modal.classList.contains('is-closing')) {
+            return;
+        }
+
+        finalizeClose(modalTransitionToken);
     });
 
     if (modal.classList.contains('is-active')) {
