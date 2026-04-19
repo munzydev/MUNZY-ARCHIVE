@@ -1844,16 +1844,21 @@ function initSectionScrollHandoff() {
 
     const reducedMotionMediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
     const wheelHandoffMediaQuery = window.matchMedia('(pointer: fine) and (min-width: 1024px)');
-    const touchHandoffMediaQuery = window.matchMedia('(hover: none) and (pointer: coarse)');
+    const touchHandoffPointerMediaQuery = window.matchMedia('(any-pointer: coarse)');
+    const touchHandoffViewportMediaQuery = window.matchMedia('(max-width: 1279px)');
     const WHEEL_DELTA_THRESHOLD = 1.5;
-    const TOUCH_SWIPE_MIN_DELTA_PX = 68;
-    const TOUCH_VERTICAL_DOMINANCE_RATIO = 1.15;
-    const TOUCH_DOWN_PROGRESS_THRESHOLD_TABLET = 0.92;
-    const TOUCH_DOWN_PROGRESS_THRESHOLD_MOBILE = 0.94;
-    const TOUCH_UP_PROGRESS_THRESHOLD_TABLET = 0.12;
-    const TOUCH_UP_PROGRESS_THRESHOLD_MOBILE = 0.1;
-    const TOUCH_SCROLL_DURATION_SCALE_MIN = 1.35;
-    const TOUCH_SCROLL_DURATION_SCALE_MAX = 1.55;
+    const TOUCH_SWIPE_MIN_DELTA_PX_MIN = 34;
+    const TOUCH_SWIPE_MIN_DELTA_PX_MAX = 56;
+    const TOUCH_SWIPE_MIN_DELTA_VIEWPORT_RATIO = 0.05;
+    const TOUCH_VERTICAL_DOMINANCE_RATIO = 1.12;
+    const TOUCH_DOWN_PROGRESS_THRESHOLD_TABLET = 0.84;
+    const TOUCH_DOWN_PROGRESS_THRESHOLD_MOBILE = 0.86;
+    const TOUCH_UP_PROGRESS_THRESHOLD_TABLET = 0.2;
+    const TOUCH_UP_PROGRESS_THRESHOLD_MOBILE = 0.18;
+    const TOUCH_DOWN_PROGRESS_RELAX_BY_SWIPE = 0.22;
+    const TOUCH_UP_PROGRESS_RELAX_BY_SWIPE = 0.18;
+    const TOUCH_SCROLL_DURATION_SCALE_MIN = 1.12;
+    const TOUCH_SCROLL_DURATION_SCALE_MAX = 1.32;
     const TOUCH_SCROLL_DURATION_SCALE_RANGE = TOUCH_SCROLL_DURATION_SCALE_MAX - TOUCH_SCROLL_DURATION_SCALE_MIN;
     const TOUCH_FORCE_SMOOTH_SCROLL = true;
     const SECTION_EDGE_TOLERANCE_PX = 12;
@@ -2132,6 +2137,18 @@ function initSectionScrollHandoff() {
         };
     };
 
+    const getTouchSwipeMinDeltaPx = () => {
+        const viewportHeight = Math.max(1, getViewportHeight());
+        const viewportBasedDelta = viewportHeight * TOUCH_SWIPE_MIN_DELTA_VIEWPORT_RATIO;
+        return clamp(viewportBasedDelta, TOUCH_SWIPE_MIN_DELTA_PX_MIN, TOUCH_SWIPE_MIN_DELTA_PX_MAX);
+    };
+
+    const getIsTouchHandoffEnabled = () => {
+        const maxTouchPoints = navigator.maxTouchPoints || 0;
+        const hasTouchPointer = touchHandoffPointerMediaQuery.matches || maxTouchPoints > 0;
+        return hasTouchPointer && touchHandoffViewportMediaQuery.matches;
+    };
+
     const getTouchScrollDurationScale = (swipeDistancePx) => {
         const viewportHeight = Math.max(1, getViewportHeight());
         const swipeStrength = clamp(swipeDistancePx / viewportHeight, 0, 1);
@@ -2294,11 +2311,22 @@ function initSectionScrollHandoff() {
         return null;
     };
 
-    const resolveTouchTargetTop = (direction) => {
+    const resolveTouchTargetTop = (direction, swipeStrength = 0) => {
         const sectionBoundaries = getSectionBoundaries();
         const currentScrollTop = getPageScrollTop();
         const sectionContext = getSectionContext(sectionBoundaries, currentScrollTop);
         const touchThresholds = getTouchProgressThresholds();
+        const normalizedSwipeStrength = clamp(swipeStrength, 0, 1);
+        const touchDownProgressThreshold = clamp(
+            touchThresholds.down - normalizedSwipeStrength * TOUCH_DOWN_PROGRESS_RELAX_BY_SWIPE,
+            0.58,
+            touchThresholds.down
+        );
+        const touchUpProgressThreshold = clamp(
+            touchThresholds.up + normalizedSwipeStrength * TOUCH_UP_PROGRESS_RELAX_BY_SWIPE,
+            touchThresholds.up,
+            0.42
+        );
 
         if (!sectionContext) {
             return null;
@@ -2320,7 +2348,7 @@ function initSectionScrollHandoff() {
                 return null;
             }
 
-            if (currentSectionProgress < touchThresholds.down) {
+            if (currentSectionProgress < touchDownProgressThreshold) {
                 return null;
             }
 
@@ -2332,7 +2360,7 @@ function initSectionScrollHandoff() {
                 return null;
             }
 
-            if (currentSectionProgress > touchThresholds.up) {
+            if (currentSectionProgress > touchUpProgressThreshold) {
                 return null;
             }
 
@@ -2356,7 +2384,7 @@ function initSectionScrollHandoff() {
      * 섹션 경계 핸드오프를 wheel과 동일한 규칙으로 적용한다.
      */
     const handleTouchStart = (event) => {
-        if (!touchHandoffMediaQuery.matches || isInteractionLocked() || isSectionAnimating) {
+        if (!getIsTouchHandoffEnabled() || isInteractionLocked() || isSectionAnimating) {
             resetTrackedTouch();
             return;
         }
@@ -2389,7 +2417,7 @@ function initSectionScrollHandoff() {
     };
 
     const handleTouchEnd = (event) => {
-        if (trackedTouchId === null || !touchHandoffMediaQuery.matches) {
+        if (trackedTouchId === null || !getIsTouchHandoffEnabled()) {
             resetTrackedTouch();
             return;
         }
@@ -2409,7 +2437,8 @@ function initSectionScrollHandoff() {
         const absDeltaY = Math.abs(deltaY);
         resetTrackedTouch();
 
-        if (absDeltaY < TOUCH_SWIPE_MIN_DELTA_PX) {
+        const touchSwipeMinDeltaPx = getTouchSwipeMinDeltaPx();
+        if (absDeltaY < touchSwipeMinDeltaPx) {
             return;
         }
 
@@ -2435,7 +2464,8 @@ function initSectionScrollHandoff() {
             wheelCooldownUntil = 0;
         }
 
-        const targetTop = resolveTouchTargetTop(direction);
+        const swipeStrength = clamp(absDeltaY / Math.max(1, getViewportHeight()), 0, 1);
+        const targetTop = resolveTouchTargetTop(direction, swipeStrength);
         if (targetTop === null) {
             return;
         }
