@@ -1,13 +1,15 @@
 @charset "utf-8";
 
-
+/* =========================================
+   전역 CSS 변수 (Figma web.tokens.json)
+   ========================================= */
 :root {
-    
+    /* 1) Color Tokens */
     --primitive-color-brand-primary: #35483f;
     --primitive-color-brand-secondary: #d2d9d8;
     --primitive-color-neutral-white: #ffffff;
 
-    
+    /* 2) Typography Tokens - default(default) */
     --primitive-typo-font-size-default-display-1: 96px;
     --primitive-typo-font-size-default-display-2: 96px;
     --primitive-typo-font-size-default-display-3: 96px;
@@ -21,7 +23,7 @@
     --primitive-typo-font-size-default-body-sm: 18px;
     --primitive-typo-font-size-default-body-xs: 16px;
 
-    
+    /* 3) Typography Tokens - Tablet */
     --primitive-typo-font-size-tablet-display-1: 64px;
     --primitive-typo-font-size-tablet-display-2: 88px;
     --primitive-typo-font-size-tablet-display-3: 70px;
@@ -35,7 +37,7 @@
     --primitive-typo-font-size-tablet-body-sm: 16px;
     --primitive-typo-font-size-tablet-body-xs: 14px;
 
-    
+    /* 4) Typography Tokens - Mobile */
     --primitive-typo-font-size-mobile-display-1: 36px;
     --primitive-typo-font-size-mobile-display-2: 62px;
     --primitive-typo-font-size-mobile-display-3: 50px;
@@ -49,32 +51,34 @@
     --primitive-typo-font-size-mobile-body-sm: 14px;
     --primitive-typo-font-size-mobile-body-xs: 12px;
 
-    
+    /* 5) Component Alias Tokens */
     --component-header-contact-default: 11px;
     --component-header-contact-tablet: 11px;
     --component-header-contact-mobile: 8px;
 
-    
+    /* 6) Font Family Tokens */
     --font-family-serif: "Newsreader", serif;
     --font-family-sans: "Orbit", "Noto Sans KR", "Pretendard", sans-serif;
-    
+    /* Space Grotesk는 영문 전용이므로, 한글이 나왔을 때 깨지지 않도록 한글 폰트(Pretendard 등)를 뒤에 붙여 방어막을 칩니다. */
     --font-family-space: "Space Grotesk", "Pretendard", "Noto Sans KR", sans-serif;
     --font-family-pretendard: "Pretendard", "Noto Sans KR", "Orbit", sans-serif;
 
-    
-    
-    
+    /* 7) padding */
+    /* padding 전체에 적용시, y - x 순 */
+    /* 공통 좌우 여백 space-padding-x */
     --common-space-padding-x-default: 24px;
     --common-space-padding-x-tablet: 24px;
     --common-space-padding-x-mobile: 20px;
 
-    
+    /* 공통 위아래 여백 space-padding-y */
     --common-space-padding-y-default: 140px;
     --common-space-padding-y-tablet: 120px;
     --common-space-padding-y-mobile: 100px;
 }
 
-
+/* =========================================
+   Base
+   ========================================= */
 html,
 body {
     color: var(--primitive-color-brand-primary);
@@ -88,7 +92,9 @@ video {
     width: 100%;
 }
 
-
+/* =========================================
+   공통 컴포넌트 모음
+   ========================================= */
 .btn-CTA {
     align-items: center;
     border-bottom: 1px solid var(--primitive-color-brand-primary);
@@ -128,7 +134,10 @@ video {
     width: 100%;
 }
 
-
+/* =========================================
+   공통
+   Header
+   ========================================= */
 .global-header {
     margin: 0 auto;
     padding: 20px 30px;
@@ -219,7 +228,7 @@ video {
     width: 24px;
 }
 
-
+/* 메뉴 토글 아이콘: 가상요소(::before, ::after) + 중앙 라인(.line)으로 햄버거/닫기(X) 전환 */
 .global-header .btn-menu-toggle .icon-wrapper {
     display: inline-block;
     height: 24px;
@@ -349,7 +358,10 @@ video {
     transition-delay: 0.23s;
 }
 
-
+/* =========================================
+   공통
+   Hero Nav
+   ========================================= */
 .hero-nav {
     align-items: center;
     display: flex;
@@ -371,7 +383,10 @@ video {
     width: 100%;
 }
 
-
+/* =========================================
+   공통
+   title-txt-type / box1 / title-btn1 / box2 / box3
+   ========================================= */
 .title-txt-type {
     color: var(--primitive-color-brand-primary);
     font-family: var(--font-family-serif);
@@ -549,7 +564,7 @@ video {
     aspect-ratio: 40/21;
     overflow: hidden;
     border-radius: clamp(6px, 0.78125vw, 16px);
-    
+    /* 1280px 기준 10px이며, 화면 너비에 따라 6px~16px 사이로 유동적으로 조절됨 */
 }
 
 
@@ -566,12 +581,16 @@ video {
     color: var(--primitive-color-brand-primary);
     font-feature-settings: 'liga' off, 'clig' off;
     font-family: var(--font-family-sans);
-    
+    /* 
+       [반응형 타이포그래피 설정]
+       최소 22px을 유지하되, 화면 너비가 1280px을 넘어서면 1.71875vw 비율로 유동적으로 커지며, 
+       최대 28px까지만 확장되도록 제한하여 가독성과 심미성을 동시에 확보함.
+    */
     font-size: clamp(var(--primitive-typo-font-size-default-body-lg), 1.71875vw, 28px);
     font-style: normal;
     font-weight: 400;
     line-height: 125%;
-    
+    /* 27.5px */
     letter-spacing: -1.2px;
     text-transform: uppercase;
 }
@@ -584,6 +603,7 @@ video {
 
 
 .box3 .contents-wrap .copy-wrap .btn-wrap a.block-link {
-    
+    /* 준비중인 프로젝트의 경우 클래스명에 block-link를 추가한다. (KC)
+    해당 버튼은 투명도 50%, 링크 연결 및 마우스 hover 시 커서가 바뀌지 않게 설정한다. */
     opacity: 50%;
 }

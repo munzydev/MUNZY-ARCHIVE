@@ -2,20 +2,20 @@
 <html lang="ko">
 
 <head>
-    
+    <!-- Basic character encoding and responsive settings -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="format-detection" content="telephone=no, address=no, email=no">
-    <meta name="robots" content="index, follow"> 
+    <meta name="robots" content="index, follow"> <!-- robot meta tag -->
 
 
-    
-    <link rel="icon" type="image/svg+xml" href="assets/img/favicon-32x32.svg"> 
+    <!-- Favicon and PWA basic settings -->
+    <link rel="icon" type="image/svg+xml" href="assets/img/favicon-32x32.svg"> <!-- For modern browsers -->
     <link rel="icon" type="image/png" sizes="32x32" href="assets/img/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="assets/img/favicon-16x16.png">
     <link rel="apple-touch-icon" sizes="180x180" href="assets/img/apple-touch-icon.png">
-    <link rel="shortcut icon" href="https://munzydev.github.io/MUNZY-ARCHIVE/assets/img/favicon-32x32.svg">
-    
+    <link rel="shortcut icon" href="https://munzydev.github.io/MUNZY-ARCHIVE/assets/img/favicon-32x32.svg"><!-- NAVER favicon markup -->
+    <!-- SEO: 1) Summary meta 2) Social cards 3) Canonical URL -->
     <title data-i18n="page_title">MUNZY ARCHIVE</title>
     <meta name="description" content="웹 퍼블리셔 MUNZY의 포트폴리오입니다. 반응형 웹 구현, 인터랙션 퍼블리싱, UX 설계, 성능 최적화와 배포까지 실무 중심 프로젝트를 담았습니다.">
     <link rel="canonical" href="https://munzydev.github.io/MUNZY-ARCHIVE">
@@ -38,7 +38,7 @@
 
 
 
-    
+    <!-- Font -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
@@ -48,14 +48,14 @@
         href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
 
 
-    
+    <!-- Expertise background preload by device range -->
     <link rel="preload" as="image" href="assets/img/expertise_bg_mobile.jpg" media="(max-width: 799px)">
     <link rel="preload" as="image" href="assets/img/expertise_bg_tablet.jpg" media="(min-width: 800px) and (max-width: 1279px)">
     <link rel="preload" as="image" href="assets/img/expertise_bg.webp" media="(min-width: 1280px)">
 
 
-    
-    
+    <!-- Load basic CSS -->
+    <!-- CSS -->
     <link rel="stylesheet" href="css/reset.css">
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/index.css">
@@ -63,17 +63,21 @@
 </head>
 
 <body>
-    
+    <!--
+      1) Figma Home 구조 기준 시맨틱 골격
+      2) 섹션 ID는 앵커 네비게이션 연결 기준
+      3) 현재 단계는 구조만 작성하고 실제 콘텐츠/스타일은 후속 작업에서 반영 - 현재 진행중.
+    -->
 
-    
+    <!-- 글로벌 헤더 (1, 2차 헤더 통합) -->
     <header class="global-header">
         <div class="header-wrapper">
-            
+            <!-- 1차 헤더 (항상 노출되는 영역) -->
             <div class="header-primary">
                 <p><a href="#" class="way-contact">how to contact?</a></p>
                 <h1 class="site-logo"><a href="./"><img src="assets/logo/color=green.svg" alt="사이트 로고"></a></h1>
 
-                
+                <!-- 햄버거 메뉴 버튼 (button 태그 적용을 통한 웹 접근성 개선) -->
                 <button type="button" class="btn-menu-toggle" id="menu-toggle" aria-label="Open menu"
                     aria-controls="header-secondary" aria-expanded="false">
                     <span class="icon-wrapper" aria-hidden="true">
@@ -82,7 +86,7 @@
                 </button>
             </div>
 
-            
+            <!-- 2차 헤더 (숨겨져 있다가 메뉴 클릭 시 펼쳐지는 영역) -->
             <nav id="header-secondary" class="header-secondary" aria-hidden="true">
                 <div class="header-secondary-inner">
                     <ul>
@@ -97,11 +101,11 @@
     </header>
 
     <main id="hero" class="hero">
-        
+        <!-- 배경 비디오 추가 (소리 끔, 자동/반복 재생) -->
         <video class="hero-bg-video" src="./assets/video/hero_bg_video.webm" autoplay loop muted playsinline preload="metadata"
             poster="assets/img/hero_bg-video-poster.jpg" aria-hidden="true"></video>
 
-        
+        <!-- 모바일에서는 hero-nav 안보이게 할 예정 -->
         <nav class="hero-nav">
             <a href="./" class="site-logo"><img src="assets/logo/color=white.svg" alt="MUNZY ARCHIVE 홈 로고"></a>
 
@@ -281,7 +285,7 @@
         </div>
     </footer>
 
-    
+    <!-- Internal Project Modal Placeholder -->
     <div id="modal-internal" class="modal-placeholder modal-projects" role="dialog" aria-modal="true"
         aria-labelledby="modal-internal-title" aria-hidden="true">
         <div class="top">
@@ -416,7 +420,7 @@
         </ul>
     </div>
 
-    
+    <!-- Personal Project Modal Placeholder -->
     <div id="modal-personal" class="modal-placeholder modal-projects" role="dialog" aria-modal="true"
         aria-labelledby="modal-personal-title" aria-hidden="true">
         <div class="top">
@@ -443,7 +447,7 @@
                             개인 포트폴리오를 체계적으로 정리한 홈페이지. 사이트의 전체 콘셉트 기획을 시작으로 레퍼런스 리서치, 비주얼 디자인 설계, 퍼블리싱, 구현 단계까지 전
                             과정 담당.<br>
                             -WORK : PLANNING, DESIGN, DEVELOPMENT<br>
-                            -PERIOD : 2026.03.21 - 2026.04.15<br>
+                            -PERIOD : 2026.03.21 - 2026.04.20<br>
                             -CONTRIBUTION : 100%
                         </p>
                         <div class="btn-wrap">
@@ -487,7 +491,7 @@
         </ul>
     </div>
 
-    
+    <!-- js -->
     <script src="./js/index.js"></script>
 </body>
 
