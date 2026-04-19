@@ -8,16 +8,37 @@
  * 6) Works 모달 열기/닫기 및 접근성 상태 동기화
  */
 document.addEventListener('DOMContentLoaded', () => {
-    initWayContactAlert();
-    initCopyEmail();
-    initHeaderMenu();
-    initHeroReveal();
-    initIntroReveal();
-    initExpertiseReveal();
-    initWorksHeadingReveal();
-    initIntroImageScrollSwap();
-    initSectionScrollHandoff();
-    initProjectModals();
+    /*
+     * [초기화 실패 격리]
+     * 1) 모듈별로 개별 try/catch 실행
+     * 2) 한 모듈 실패가 전체 인터랙션 초기화 중단으로 번지지 않도록 방어
+     */
+    const runInitSafely = (initName, initFn) => {
+        try {
+            initFn();
+        } catch (initError) {
+            if (typeof console !== 'undefined' && typeof console.error === 'function') {
+                console.error(`[init-failed] ${initName}`, initError);
+            }
+        }
+    };
+
+    const initEntries = [
+        ['initWayContactAlert', initWayContactAlert],
+        ['initCopyEmail', initCopyEmail],
+        ['initHeaderMenu', initHeaderMenu],
+        ['initHeroReveal', initHeroReveal],
+        ['initIntroReveal', initIntroReveal],
+        ['initExpertiseReveal', initExpertiseReveal],
+        ['initWorksHeadingReveal', initWorksHeadingReveal],
+        ['initIntroImageScrollSwap', initIntroImageScrollSwap],
+        ['initSectionScrollHandoff', initSectionScrollHandoff],
+        ['initProjectModals', initProjectModals],
+    ];
+
+    initEntries.forEach(([initName, initFn]) => {
+        runInitSafely(initName, initFn);
+    });
 });
 
 /**
