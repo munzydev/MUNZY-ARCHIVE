@@ -1961,22 +1961,21 @@ function initSectionScrollHandoff() {
     const reducedMotionMediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
     const wheelHandoffMediaQuery = window.matchMedia('(pointer: fine) and (min-width: 1024px)');
     const touchHandoffPointerMediaQuery = window.matchMedia('(any-pointer: coarse)');
-    const touchHandoffViewportMediaQuery = window.matchMedia('(max-width: 1279px)');
+    const touchPrimaryPointerMediaQuery = window.matchMedia('(pointer: coarse)');
     const WHEEL_DELTA_THRESHOLD = 1.5;
     const TOUCH_SWIPE_MIN_DELTA_PX_MIN = 34;
     const TOUCH_SWIPE_MIN_DELTA_PX_MAX = 56;
     const TOUCH_SWIPE_MIN_DELTA_VIEWPORT_RATIO = 0.05;
+    const TOUCH_GESTURE_LOCK_MIN_DELTA_PX = 10;
+    const TOUCH_VERTICAL_LOCK_RATIO = 1.02;
     const TOUCH_VERTICAL_DOMINANCE_RATIO = 1.12;
-    const TOUCH_DOWN_PROGRESS_THRESHOLD_TABLET = 0.84;
-    const TOUCH_DOWN_PROGRESS_THRESHOLD_MOBILE = 0.86;
-    const TOUCH_UP_PROGRESS_THRESHOLD_TABLET = 0.2;
-    const TOUCH_UP_PROGRESS_THRESHOLD_MOBILE = 0.18;
     const TOUCH_DOWN_PROGRESS_RELAX_BY_SWIPE = 0.22;
     const TOUCH_UP_PROGRESS_RELAX_BY_SWIPE = 0.18;
     const TOUCH_SCROLL_DURATION_SCALE_MIN = 1.12;
     const TOUCH_SCROLL_DURATION_SCALE_MAX = 1.32;
     const TOUCH_SCROLL_DURATION_SCALE_RANGE = TOUCH_SCROLL_DURATION_SCALE_MAX - TOUCH_SCROLL_DURATION_SCALE_MIN;
     const TOUCH_FORCE_SMOOTH_SCROLL = true;
+    const TOUCH_HANDOFF_PREVENT_DEFAULT_WINDOW_MS = 180;
     const HEADER_SECONDARY_CLOSE_WAIT_FALLBACK_MS = 620;
     const ANCHOR_LANDING_TOLERANCE_PX = 10;
     const ANCHOR_LANDING_RETRY_DELAY_MS = 90;
@@ -2002,6 +2001,8 @@ function initSectionScrollHandoff() {
     let touchStartY = 0;
     let touchLastX = 0;
     let touchLastY = 0;
+    let touchGestureState = 'idle';
+    let touchPreventDefaultUntil = 0;
     let anchorNavigationToken = 0;
     let cachedScrollContainerElement = null;
     const anchorLinks = document.querySelectorAll('a[href^="#"]');
@@ -2327,15 +2328,13 @@ function initSectionScrollHandoff() {
 
     const getTouchProgressThresholds = () => {
         const viewportWidth = window.innerWidth || document.documentElement.clientWidth || 1280;
-        const isMobileViewport = viewportWidth < 800;
+        const viewportHeight = getViewportHeight();
+        const shortestViewport = Math.max(1, Math.min(viewportWidth, viewportHeight));
+        const normalizedViewport = clamp((shortestViewport - 360) / (1024 - 360), 0, 1);
 
         return {
-            down: isMobileViewport
-                ? TOUCH_DOWN_PROGRESS_THRESHOLD_MOBILE
-                : TOUCH_DOWN_PROGRESS_THRESHOLD_TABLET,
-            up: isMobileViewport
-                ? TOUCH_UP_PROGRESS_THRESHOLD_MOBILE
-                : TOUCH_UP_PROGRESS_THRESHOLD_TABLET,
+            down: clamp(0.86 - normalizedViewport * 0.06, 0.8, 0.86),
+            up: clamp(0.17 + normalizedViewport * 0.07, 0.17, 0.24),
         };
     };
 
@@ -2347,8 +2346,10 @@ function initSectionScrollHandoff() {
 
     const getIsTouchHandoffEnabled = () => {
         const maxTouchPoints = navigator.maxTouchPoints || 0;
-        const hasTouchPointer = touchHandoffPointerMediaQuery.matches || maxTouchPoints > 0;
-        return hasTouchPointer && touchHandoffViewportMediaQuery.matches;
+        const hasTouchPointer = touchHandoffPointerMediaQuery.matches
+            || touchPrimaryPointerMediaQuery.matches
+            || maxTouchPoints > 0;
+        return hasTouchPointer;
     };
 
     const getTouchScrollDurationScale = (swipeDistancePx) => {
@@ -2358,52 +2359,85 @@ function initSectionScrollHandoff() {
         return clamp(durationScale, TOUCH_SCROLL_DURATION_SCALE_MIN, TOUCH_SCROLL_DURATION_SCALE_MAX);
     };
 
-    const resolveWheelTargetTop = (direction, wheelDeltaY = 0) => {
+    const resolveSectionHandoffTarget = (direction, options = {}) => {
         const sectionBoundaries = getSectionBoundaries();
         const currentScrollTop = getPageScrollTop();
-        const predictedScrollTop = Math.max(0, currentScrollTop + wheelDeltaY * WHEEL_PREDICTION_GAIN);
         const viewportHeight = getViewportHeight();
-        const currentSectionIndex = getCurrentSectionIndex(sectionBoundaries, currentScrollTop);
-        const currentBoundary = sectionBoundaries[currentSectionIndex];
+        const sectionContext = getSectionContext(sectionBoundaries, currentScrollTop);
+        const sourceType = options.source === 'touch' ? 'touch' : 'wheel';
+        const predictedScrollTop = Number.isFinite(options.predictedScrollTop)
+            ? Math.max(0, options.predictedScrollTop)
+            : currentScrollTop;
+        const normalizedSwipeStrength = Number.isFinite(options.swipeStrength)
+            ? clamp(options.swipeStrength, 0, 1)
+            : 0;
+        const touchThresholds = getTouchProgressThresholds();
+        const touchDownProgressThreshold = clamp(
+            touchThresholds.down - normalizedSwipeStrength * TOUCH_DOWN_PROGRESS_RELAX_BY_SWIPE,
+            0.58,
+            touchThresholds.down
+        );
+        const touchUpProgressThreshold = clamp(
+            touchThresholds.up + normalizedSwipeStrength * TOUCH_UP_PROGRESS_RELAX_BY_SWIPE,
+            touchThresholds.up,
+            0.42
+        );
 
-        if (!currentBoundary) {
+        if (!sectionContext) {
             return null;
         }
 
+        const {
+            currentBoundary,
+            previousBoundary,
+            nextBoundary,
+            currentSectionProgress,
+        } = sectionContext;
+
         if (direction > 0) {
-            if (currentSectionIndex >= sectionBoundaries.length - 1) {
+            if (!nextBoundary) {
                 return null;
             }
 
-            const nextBoundary = sectionBoundaries[currentSectionIndex + 1];
-            let handoffTriggerTop = nextBoundary.top - viewportHeight - getSectionDownwardHandoffBufferPx(viewportHeight);
+            if (currentBoundary.element === introSection && !isIntroVisualProgressComplete()) {
+                return null;
+            }
 
-            if (introSection && currentBoundary.element === introSection) {
-                const introCompletionTop = getIntroCompletionTop();
-                handoffTriggerTop = Math.max(handoffTriggerTop, introCompletionTop);
-
-                if (!isIntroVisualProgressComplete()) {
+            if (sourceType === 'touch') {
+                if (currentSectionProgress < touchDownProgressThreshold) {
                     return null;
                 }
-            }
+            } else {
+                let handoffTriggerTop = nextBoundary.top - viewportHeight - getSectionDownwardHandoffBufferPx(viewportHeight);
 
-            if (Math.max(currentScrollTop, predictedScrollTop) < handoffTriggerTop - SECTION_EDGE_TOLERANCE_PX) {
-                return null;
+                if (introSection && currentBoundary.element === introSection) {
+                    const introCompletionTop = getIntroCompletionTop();
+                    handoffTriggerTop = Math.max(handoffTriggerTop, introCompletionTop);
+                }
+
+                if (Math.max(currentScrollTop, predictedScrollTop) < handoffTriggerTop - SECTION_EDGE_TOLERANCE_PX) {
+                    return null;
+                }
             }
 
             return Math.round(nextBoundary.top);
         }
 
         if (direction < 0) {
-            if (currentSectionIndex <= 0) {
+            if (!previousBoundary) {
                 return null;
             }
 
-            const previousBoundary = sectionBoundaries[currentSectionIndex - 1];
-            const handoffTriggerTop = currentBoundary.top + getSectionUpwardHandoffBufferPx(viewportHeight);
+            if (sourceType === 'touch') {
+                if (currentSectionProgress > touchUpProgressThreshold) {
+                    return null;
+                }
+            } else {
+                const handoffTriggerTop = currentBoundary.top + getSectionUpwardHandoffBufferPx(viewportHeight);
 
-            if (Math.min(currentScrollTop, predictedScrollTop) > handoffTriggerTop + SECTION_EDGE_TOLERANCE_PX) {
-                return null;
+                if (Math.min(currentScrollTop, predictedScrollTop) > handoffTriggerTop + SECTION_EDGE_TOLERANCE_PX) {
+                    return null;
+                }
             }
 
             if (
@@ -2613,72 +2647,76 @@ function initSectionScrollHandoff() {
         return null;
     };
 
-    const resolveTouchTargetTop = (direction, swipeStrength = 0) => {
-        const sectionBoundaries = getSectionBoundaries();
-        const currentScrollTop = getPageScrollTop();
-        const sectionContext = getSectionContext(sectionBoundaries, currentScrollTop);
-        const touchThresholds = getTouchProgressThresholds();
-        const normalizedSwipeStrength = clamp(swipeStrength, 0, 1);
-        const touchDownProgressThreshold = clamp(
-            touchThresholds.down - normalizedSwipeStrength * TOUCH_DOWN_PROGRESS_RELAX_BY_SWIPE,
-            0.58,
-            touchThresholds.down
-        );
-        const touchUpProgressThreshold = clamp(
-            touchThresholds.up + normalizedSwipeStrength * TOUCH_UP_PROGRESS_RELAX_BY_SWIPE,
-            touchThresholds.up,
-            0.42
-        );
+    const getTouchGestureMetrics = () => {
+        const deltaX = touchLastX - touchStartX;
+        const deltaY = touchStartY - touchLastY;
+        const absDeltaX = Math.abs(deltaX);
+        const absDeltaY = Math.abs(deltaY);
 
-        if (!sectionContext) {
-            return null;
+        return {
+            deltaX,
+            deltaY,
+            absDeltaX,
+            absDeltaY,
+        };
+    };
+
+    const tryTriggerTouchHandoff = (gestureMetrics, eventForPreventDefault = null) => {
+        if (!gestureMetrics) {
+            return false;
         }
 
-        const {
-            currentBoundary,
-            previousBoundary,
-            nextBoundary,
-            currentSectionProgress,
-        } = sectionContext;
-
-        if (direction > 0) {
-            if (!nextBoundary) {
-                return null;
-            }
-
-            if (currentBoundary.element === introSection && !isIntroVisualProgressComplete()) {
-                return null;
-            }
-
-            if (currentSectionProgress < touchDownProgressThreshold) {
-                return null;
-            }
-
-            return Math.round(nextBoundary.top);
+        const { absDeltaX, absDeltaY, deltaY } = gestureMetrics;
+        const touchSwipeMinDeltaPx = getTouchSwipeMinDeltaPx();
+        if (absDeltaY < touchSwipeMinDeltaPx) {
+            return false;
         }
 
-        if (direction < 0) {
-            if (!previousBoundary) {
-                return null;
-            }
-
-            if (currentSectionProgress > touchUpProgressThreshold) {
-                return null;
-            }
-
-            if (
-                introSection
-                && expertiseSection
-                && currentBoundary.element === expertiseSection
-                && previousBoundary.element === introSection
-            ) {
-                return Math.round(getIntroCompletionTop());
-            }
-
-            return Math.round(previousBoundary.top);
+        if (absDeltaY <= absDeltaX * TOUCH_VERTICAL_DOMINANCE_RATIO) {
+            return false;
         }
 
-        return null;
+        if (isInteractionLocked() || isSectionAnimating) {
+            return false;
+        }
+
+        const direction = deltaY > 0 ? 1 : -1;
+        const currentTime = performance.now();
+        const isReverseDirectionDuringCooldown = currentTime < wheelCooldownUntil
+            && lastWheelAnimationDirection !== 0
+            && direction !== lastWheelAnimationDirection;
+
+        if (currentTime < wheelCooldownUntil && !isReverseDirectionDuringCooldown) {
+            return false;
+        }
+
+        if (isReverseDirectionDuringCooldown) {
+            wheelCooldownUntil = 0;
+        }
+
+        const swipeStrength = clamp(absDeltaY / Math.max(1, getViewportHeight()), 0, 1);
+        const targetTop = resolveSectionHandoffTarget(direction, {
+            source: 'touch',
+            swipeStrength,
+        });
+        if (targetTop === null) {
+            return false;
+        }
+
+        if (eventForPreventDefault && eventForPreventDefault.cancelable) {
+            eventForPreventDefault.preventDefault();
+        }
+
+        touchGestureState = 'handoff';
+        touchPreventDefaultUntil = performance.now() + TOUCH_HANDOFF_PREVENT_DEFAULT_WINDOW_MS;
+
+        const touchDurationScale = getTouchScrollDurationScale(absDeltaY);
+        animatePageScrollTo(targetTop, direction, {
+            durationScale: touchDurationScale,
+            forceSmooth: TOUCH_FORCE_SMOOTH_SCROLL,
+        });
+
+        return true;
     };
 
     /*
