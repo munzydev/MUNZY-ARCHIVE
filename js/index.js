@@ -262,15 +262,18 @@ function initIntroReveal() {
     const introCopyLines = introCopy ? introCopy.querySelectorAll(':scope > p') : [];
     const reducedMotionMediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
     const introRevealCoarsePointerMediaQuery = window.matchMedia('(pointer: coarse)');
+    const introRevealHoverMediaQuery = window.matchMedia('(hover: hover)');
     const INTRO_REVEAL_COMPLETE_FALLBACK_MS = 1800;
-    const INTRO_INVIEW_THRESHOLD = 0;
+    const INTRO_INVIEW_THRESHOLD = 0.12;
     const INTRO_PREHIDDEN_CLASS = 'is-intro-prehidden';
     let introRevealCompleteTimer = null;
     let hasPlayedIntroReveal = false;
     let isIntroInView = false;
     let introInViewObserver = null;
     const shouldApplyIntroReducedMotionFallback = () => {
-        return reducedMotionMediaQuery.matches && !introRevealCoarsePointerMediaQuery.matches;
+        return reducedMotionMediaQuery.matches
+            && !introRevealCoarsePointerMediaQuery.matches
+            && !introRevealHoverMediaQuery.matches;
     };
 
     const applySequentialIndexVariable = (elements, variableName) => {
@@ -374,9 +377,23 @@ function initIntroReveal() {
         playIntroRevealOnce();
     };
 
-    const getIsIntroInViewport = () => {
+    const getIntroIntersectionRatio = () => {
         const introRect = introSection.getBoundingClientRect();
-        return introRect.bottom > 0 && introRect.top < window.innerHeight;
+        const viewportHeight = window.innerHeight || document.documentElement.clientHeight || 1;
+
+        if (introRect.bottom <= 0 || introRect.top >= viewportHeight) {
+            return 0;
+        }
+
+        const visibleTop = Math.max(introRect.top, 0);
+        const visibleBottom = Math.min(introRect.bottom, viewportHeight);
+        const visibleHeight = Math.max(0, visibleBottom - visibleTop);
+        const introHeight = Math.max(1, introRect.height);
+        return visibleHeight / introHeight;
+    };
+
+    const getIsIntroInViewport = () => {
+        return getIntroIntersectionRatio() >= INTRO_INVIEW_THRESHOLD;
     };
 
     const handleReducedMotionChange = () => {
@@ -443,7 +460,7 @@ function initIntroReveal() {
          */
         introInViewObserver = new IntersectionObserver((entries) => {
             entries.forEach((entry) => {
-                syncIntroInViewState(entry.isIntersecting);
+                syncIntroInViewState(entry.intersectionRatio >= INTRO_INVIEW_THRESHOLD);
             });
         }, {
             root: null,

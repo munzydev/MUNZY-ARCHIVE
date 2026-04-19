@@ -689,15 +689,6 @@
     #hero.is-hero-reveal-ready .btm-contents .video-placeholder,
     #hero.is-hero-reveal-ready .btm-contents .hero-copy,
     #hero.is-hero-intro-complete .contents,
-    #intro.is-intro-prehidden #intro-title span,
-    #intro.is-intro-reveal-ready #intro-title span,
-    #intro.is-intro-prehidden .placeholder-wrap .img-placeholder,
-    #intro.is-intro-reveal-ready .placeholder-wrap .img-placeholder,
-    #intro.is-intro-prehidden .intro-copy,
-    #intro.is-intro-prehidden .intro-copy p,
-    #intro.is-intro-reveal-ready .intro-copy,
-    #intro.is-intro-reveal-ready .intro-copy p,
-    #intro.is-intro-reveal-complete .intro-copy,
     #expertise > .title-wrap,
     #expertise.is-expertise-prehidden .title-txt-type[data-expertise-split] > span[data-line],
     #expertise.is-expertise-title-active .title-txt-type[data-expertise-split] > span[data-line],
@@ -724,30 +715,6 @@
         transform: none !important;
     }
 
-    #intro.is-intro-prehidden #intro-title span,
-    #intro.is-intro-reveal-ready #intro-title span,
-    #intro.is-intro-prehidden .intro-copy p,
-    #intro.is-intro-reveal-ready .intro-copy p {
-        clip-path: inset(0 0 0 0) !important;
-        opacity: 1 !important;
-        transform: none !important;
-    }
-
-    /* reduce 모드에서도 intro-copy의 중앙 정렬 기준(translateX(-50%))은 유지 */
-    #intro.is-intro-prehidden .intro-copy,
-    #intro.is-intro-reveal-ready .intro-copy {
-        clip-path: inset(0 0 0 0) !important;
-        opacity: 1 !important;
-        transform: translate(-50%, 0) scale(1) !important;
-    }
-
-    #intro.is-intro-prehidden .placeholder-wrap .img-placeholder,
-    #intro.is-intro-reveal-ready .placeholder-wrap .img-placeholder {
-        opacity: 1 !important;
-        --intro-image-reveal-y: 0px !important;
-        --intro-image-reveal-scale: 1 !important;
-    }
-
     #expertise.is-expertise-prehidden .title-txt-type[data-expertise-split] > span[data-line],
     #expertise.is-expertise-prehidden .contents-wrap .contents[data-expertise-item] .sub-title,
     #expertise.is-expertise-prehidden .contents-wrap .contents[data-expertise-item] .title,
@@ -764,10 +731,6 @@
     }
 
     #hero.is-hero-intro-complete:not(.is-hero-inview) .contents {
-        opacity: 1 !important;
-    }
-
-    #intro.is-intro-reveal-complete:not(.is-intro-inview) .intro-copy {
         opacity: 1 !important;
     }
 
