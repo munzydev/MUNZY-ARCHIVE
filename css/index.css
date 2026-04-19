@@ -465,7 +465,6 @@
    --intro-image-start-y: 0px;
    --intro-image-end-y: 0px;
    --intro-image-base-rotate: 0deg;
-   --intro-image-reveal-y: 0px;
    --intro-image-reveal-scale: 1;
    --intro-image-scroll-y: calc(var(--intro-image-start-y) + (var(--intro-image-end-y) - var(--intro-image-start-y)) * var(--intro-scroll-progress, 0));
    transform: translateY(var(--intro-image-scroll-y)) rotate(var(--intro-image-base-rotate));
@@ -494,8 +493,9 @@
 #intro .placeholder-wrap .img-placeholder img {
    width: 100%;
    height: 100%;
+   display: block;
    object-fit: cover;
-   transform: translate3d(0, var(--intro-image-reveal-y), 0) scale(var(--intro-image-reveal-scale));
+   transform: scale(var(--intro-image-reveal-scale));
    transform-origin: center center;
    will-change: transform;
 }
@@ -565,19 +565,16 @@
 
 #intro.is-intro-prehidden .placeholder-wrap .img-placeholder:nth-child(1),
 #intro.is-intro-reveal-ready .placeholder-wrap .img-placeholder:nth-child(1) {
-   --intro-image-reveal-y: clamp(18px, 3.6vw, 46px);
-   --intro-image-reveal-scale: 0.96;
+   --intro-image-reveal-scale: 1.08;
 }
 
 #intro.is-intro-prehidden .placeholder-wrap .img-placeholder:nth-child(2),
 #intro.is-intro-reveal-ready .placeholder-wrap .img-placeholder:nth-child(2) {
-   --intro-image-reveal-y: clamp(-46px, -3.6vw, -18px);
-   --intro-image-reveal-scale: 0.96;
+   --intro-image-reveal-scale: 1.08;
 }
 
 #intro.is-intro-reveal-active .placeholder-wrap .img-placeholder {
    opacity: 1;
-   --intro-image-reveal-y: 0px;
    --intro-image-reveal-scale: 1;
 }
 
