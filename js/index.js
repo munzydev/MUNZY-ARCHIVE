@@ -1846,11 +1846,16 @@ function initSectionScrollHandoff() {
     const wheelHandoffMediaQuery = window.matchMedia('(pointer: fine) and (min-width: 1024px)');
     const touchHandoffMediaQuery = window.matchMedia('(hover: none) and (pointer: coarse)');
     const WHEEL_DELTA_THRESHOLD = 1.5;
-    const TOUCH_SWIPE_MIN_DELTA_PX = 56;
+    const TOUCH_SWIPE_MIN_DELTA_PX = 68;
     const TOUCH_VERTICAL_DOMINANCE_RATIO = 1.15;
-    const TOUCH_DOWN_PROGRESS_THRESHOLD = 0.86;
-    const TOUCH_UP_PROGRESS_THRESHOLD = 0.18;
-    const TOUCH_SCROLL_DURATION_SCALE = 1.2;
+    const TOUCH_DOWN_PROGRESS_THRESHOLD_TABLET = 0.92;
+    const TOUCH_DOWN_PROGRESS_THRESHOLD_MOBILE = 0.94;
+    const TOUCH_UP_PROGRESS_THRESHOLD_TABLET = 0.12;
+    const TOUCH_UP_PROGRESS_THRESHOLD_MOBILE = 0.1;
+    const TOUCH_SCROLL_DURATION_SCALE_MIN = 1.35;
+    const TOUCH_SCROLL_DURATION_SCALE_MAX = 1.55;
+    const TOUCH_SCROLL_DURATION_SCALE_RANGE = TOUCH_SCROLL_DURATION_SCALE_MAX - TOUCH_SCROLL_DURATION_SCALE_MIN;
+    const TOUCH_FORCE_SMOOTH_SCROLL = true;
     const SECTION_EDGE_TOLERANCE_PX = 12;
     const SECTION_UPWARD_HANDOFF_MIN_BUFFER_PX = 32;
     const SECTION_UPWARD_HANDOFF_VIEWPORT_RATIO = 0.04;
@@ -2113,6 +2118,27 @@ function initSectionScrollHandoff() {
         };
     };
 
+    const getTouchProgressThresholds = () => {
+        const viewportWidth = window.innerWidth || document.documentElement.clientWidth || 1280;
+        const isMobileViewport = viewportWidth < 800;
+
+        return {
+            down: isMobileViewport
+                ? TOUCH_DOWN_PROGRESS_THRESHOLD_MOBILE
+                : TOUCH_DOWN_PROGRESS_THRESHOLD_TABLET,
+            up: isMobileViewport
+                ? TOUCH_UP_PROGRESS_THRESHOLD_MOBILE
+                : TOUCH_UP_PROGRESS_THRESHOLD_TABLET,
+        };
+    };
+
+    const getTouchScrollDurationScale = (swipeDistancePx) => {
+        const viewportHeight = Math.max(1, getViewportHeight());
+        const swipeStrength = clamp(swipeDistancePx / viewportHeight, 0, 1);
+        const durationScale = TOUCH_SCROLL_DURATION_SCALE_MAX - swipeStrength * TOUCH_SCROLL_DURATION_SCALE_RANGE;
+        return clamp(durationScale, TOUCH_SCROLL_DURATION_SCALE_MIN, TOUCH_SCROLL_DURATION_SCALE_MAX);
+    };
+
     const resolveWheelTargetTop = (direction, wheelDeltaY = 0) => {
         const sectionBoundaries = getSectionBoundaries();
         const currentScrollTop = getPageScrollTop();
@@ -2272,6 +2298,7 @@ function initSectionScrollHandoff() {
         const sectionBoundaries = getSectionBoundaries();
         const currentScrollTop = getPageScrollTop();
         const sectionContext = getSectionContext(sectionBoundaries, currentScrollTop);
+        const touchThresholds = getTouchProgressThresholds();
 
         if (!sectionContext) {
             return null;
@@ -2293,7 +2320,7 @@ function initSectionScrollHandoff() {
                 return null;
             }
 
-            if (currentSectionProgress < TOUCH_DOWN_PROGRESS_THRESHOLD) {
+            if (currentSectionProgress < touchThresholds.down) {
                 return null;
             }
 
@@ -2305,7 +2332,7 @@ function initSectionScrollHandoff() {
                 return null;
             }
 
-            if (currentSectionProgress > TOUCH_UP_PROGRESS_THRESHOLD) {
+            if (currentSectionProgress > touchThresholds.up) {
                 return null;
             }
 
@@ -2413,8 +2440,10 @@ function initSectionScrollHandoff() {
             return;
         }
 
+        const touchDurationScale = getTouchScrollDurationScale(absDeltaY);
         animatePageScrollTo(targetTop, direction, {
-            durationScale: TOUCH_SCROLL_DURATION_SCALE,
+            durationScale: touchDurationScale,
+            forceSmooth: TOUCH_FORCE_SMOOTH_SCROLL,
         });
     };
 
