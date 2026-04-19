@@ -1887,6 +1887,7 @@ function initSectionScrollHandoff() {
     let touchLastX = 0;
     let touchLastY = 0;
     let anchorNavigationToken = 0;
+    let cachedScrollContainerElement = null;
     const anchorLinks = document.querySelectorAll('a[href^="#"]');
 
     const clamp = (value, min, max) => {
@@ -1898,22 +1899,45 @@ function initSectionScrollHandoff() {
         return Number.isFinite(parsedValue) ? parsedValue : 0;
     };
 
+    const isScrollableOverflowValue = (overflowValue) => /(auto|scroll|overlay)/.test(String(overflowValue || ''));
+    const isLockedOverflowValue = (overflowValue) => /(hidden|clip)/.test(String(overflowValue || ''));
+
+    const resolveScrollContainerElement = () => {
+        const bodyStyles = window.getComputedStyle(document.body);
+        const htmlStyles = window.getComputedStyle(document.documentElement);
+        const bodyScrollEnabled = isScrollableOverflowValue(bodyStyles.overflowY) || isScrollableOverflowValue(bodyStyles.overflow);
+        const htmlScrollLocked = isLockedOverflowValue(htmlStyles.overflowY) || isLockedOverflowValue(htmlStyles.overflow);
+
+        if (bodyScrollEnabled && htmlScrollLocked) {
+            return document.body;
+        }
+
+        return document.scrollingElement || document.documentElement;
+    };
+
+    const getScrollContainerElement = () => {
+        if (cachedScrollContainerElement && cachedScrollContainerElement.isConnected) {
+            return cachedScrollContainerElement;
+        }
+
+        cachedScrollContainerElement = resolveScrollContainerElement();
+        return cachedScrollContainerElement;
+    };
+
+    const refreshScrollContainerElement = () => {
+        cachedScrollContainerElement = resolveScrollContainerElement();
+    };
+
     const getPageScrollTop = () => {
-        const scrollTopCandidates = [
-            window.scrollY,
-            window.pageYOffset,
-            document.documentElement.scrollTop,
-            document.body.scrollTop,
-        ];
-        let normalizedScrollTop = 0;
+        const scrollContainer = getScrollContainerElement();
+        const containerScrollTop = Number(scrollContainer ? scrollContainer.scrollTop : 0);
 
-        scrollTopCandidates.forEach((candidate) => {
-            if (Number.isFinite(candidate)) {
-                normalizedScrollTop = Math.max(normalizedScrollTop, candidate);
-            }
-        });
+        if (Number.isFinite(containerScrollTop)) {
+            return Math.max(0, containerScrollTop);
+        }
 
-        return normalizedScrollTop;
+        const fallbackScrollTop = Number(window.scrollY || window.pageYOffset || 0);
+        return Number.isFinite(fallbackScrollTop) ? Math.max(0, fallbackScrollTop) : 0;
     };
 
     const getViewportHeight = () => {
@@ -1921,6 +1945,14 @@ function initSectionScrollHandoff() {
     };
 
     const getMaxPageScrollTop = () => {
+        const scrollContainer = getScrollContainerElement();
+        const containerScrollHeight = Number(scrollContainer ? scrollContainer.scrollHeight : 0);
+        const containerClientHeight = Number(scrollContainer ? scrollContainer.clientHeight : 0);
+
+        if (Number.isFinite(containerScrollHeight) && Number.isFinite(containerClientHeight) && containerScrollHeight > 0) {
+            return Math.max(0, containerScrollHeight - containerClientHeight);
+        }
+
         const pageScrollHeight = Math.max(
             document.documentElement.scrollHeight || 0,
             document.body.scrollHeight || 0
@@ -1931,12 +1963,15 @@ function initSectionScrollHandoff() {
 
     const setPageScrollTop = (scrollTopValue) => {
         const normalizedScrollTop = clamp(scrollTopValue, 0, getMaxPageScrollTop());
-        const scrollingElement = document.scrollingElement || document.documentElement;
+        const scrollContainer = getScrollContainerElement();
 
-        window.scrollTo(0, normalizedScrollTop);
-        scrollingElement.scrollTop = normalizedScrollTop;
-        document.documentElement.scrollTop = normalizedScrollTop;
-        document.body.scrollTop = normalizedScrollTop;
+        if (scrollContainer && typeof scrollContainer.scrollTop === 'number') {
+            scrollContainer.scrollTop = normalizedScrollTop;
+        }
+
+        if (scrollContainer === document.documentElement || scrollContainer === document.body) {
+            window.scrollTo(0, normalizedScrollTop);
+        }
     };
 
     const getSectionPageTop = (sectionElement) => {
@@ -2689,6 +2724,8 @@ function initSectionScrollHandoff() {
     window.addEventListener('touchmove', handleTouchMove, { passive: true, capture: true });
     window.addEventListener('touchend', handleTouchEnd, { passive: true, capture: true });
     window.addEventListener('touchcancel', handleTouchCancel, { passive: true, capture: true });
+    window.addEventListener('resize', refreshScrollContainerElement);
+    window.addEventListener('orientationchange', refreshScrollContainerElement);
 
     anchorLinks.forEach((anchorLink) => {
         anchorLink.addEventListener('click', handleAnchorClick);
@@ -2707,6 +2744,8 @@ function initSectionScrollHandoff() {
         window.removeEventListener('touchmove', handleTouchMove, { capture: true });
         window.removeEventListener('touchend', handleTouchEnd, { capture: true });
         window.removeEventListener('touchcancel', handleTouchCancel, { capture: true });
+        window.removeEventListener('resize', refreshScrollContainerElement);
+        window.removeEventListener('orientationchange', refreshScrollContainerElement);
 
         anchorLinks.forEach((anchorLink) => {
             anchorLink.removeEventListener('click', handleAnchorClick);
