@@ -257,6 +257,7 @@ function initIntroReveal() {
     const introCopy = introSection.querySelector('.intro-copy');
     const introCopyLines = introCopy ? introCopy.querySelectorAll(':scope > p') : [];
     const reducedMotionMediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const introRevealCoarsePointerMediaQuery = window.matchMedia('(pointer: coarse)');
     const INTRO_REVEAL_COMPLETE_FALLBACK_MS = 1800;
     const INTRO_INVIEW_THRESHOLD = 0;
     const INTRO_PREHIDDEN_CLASS = 'is-intro-prehidden';
@@ -264,6 +265,9 @@ function initIntroReveal() {
     let hasPlayedIntroReveal = false;
     let isIntroInView = false;
     let introInViewObserver = null;
+    const shouldApplyIntroReducedMotionFallback = () => {
+        return reducedMotionMediaQuery.matches && !introRevealCoarsePointerMediaQuery.matches;
+    };
 
     const applySequentialIndexVariable = (elements, variableName) => {
         elements.forEach((element, index) => {
@@ -292,7 +296,7 @@ function initIntroReveal() {
     };
 
     const ensureIntroPrehiddenState = () => {
-        if (hasPlayedIntroReveal || reducedMotionMediaQuery.matches) {
+        if (hasPlayedIntroReveal || shouldApplyIntroReducedMotionFallback()) {
             return;
         }
 
@@ -358,7 +362,7 @@ function initIntroReveal() {
             return;
         }
 
-        if (reducedMotionMediaQuery.matches) {
+        if (shouldApplyIntroReducedMotionFallback()) {
             applyReducedMotionState(true);
             return;
         }
@@ -372,7 +376,7 @@ function initIntroReveal() {
     };
 
     const handleReducedMotionChange = () => {
-        if (reducedMotionMediaQuery.matches) {
+        if (shouldApplyIntroReducedMotionFallback()) {
             applyReducedMotionState(isIntroInView);
             return;
         }
@@ -396,7 +400,7 @@ function initIntroReveal() {
 
         const shouldPreserveInView = isIntroInView || getIsIntroInViewport();
 
-        if (reducedMotionMediaQuery.matches) {
+        if (shouldApplyIntroReducedMotionFallback()) {
             applyReducedMotionState(shouldPreserveInView);
             return;
         }
@@ -443,12 +447,12 @@ function initIntroReveal() {
         });
 
         introInViewObserver.observe(introSection);
-    } else if (!reducedMotionMediaQuery.matches) {
+    } else if (!shouldApplyIntroReducedMotionFallback()) {
         // 구형 브라우저 폴백: observer 미지원 시 최초 진입에서 1회 재생한다.
         playIntroRevealOnce();
     }
 
-    if (reducedMotionMediaQuery.matches) {
+    if (shouldApplyIntroReducedMotionFallback()) {
         applyReducedMotionState(isIntroInView);
     }
 
@@ -495,6 +499,7 @@ function initExpertiseReveal() {
     }
 
     const reducedMotionMediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const expertiseRevealCoarsePointerMediaQuery = window.matchMedia('(pointer: coarse)');
     const EXPERTISE_SECTION_THRESHOLD = 0.12;
     const EXPERTISE_TITLE_ZONE_TOP_RATIO_DESKTOP = 0.79;
     const EXPERTISE_TITLE_ZONE_BOTTOM_RATIO_DESKTOP = 0.85;
@@ -516,6 +521,9 @@ function initExpertiseReveal() {
     let itemRevealAnimationFrameId = 0;
     let isItemRevealEventsBound = false;
     const pendingExpertiseItems = new Set(expertiseItems);
+    const shouldApplyExpertiseReducedMotionFallback = () => {
+        return reducedMotionMediaQuery.matches && !expertiseRevealCoarsePointerMediaQuery.matches;
+    };
 
     const getIsElementInViewport = (element) => {
         const elementRect = element.getBoundingClientRect();
@@ -667,7 +675,7 @@ function initExpertiseReveal() {
     };
 
     const ensureExpertisePrehiddenState = () => {
-        if (reducedMotionMediaQuery.matches) {
+        if (shouldApplyExpertiseReducedMotionFallback()) {
             return;
         }
 
@@ -687,7 +695,7 @@ function initExpertiseReveal() {
     const runTitleRevealCheck = () => {
         titleRevealAnimationFrameId = 0;
 
-        if (hasActivatedExpertiseTitle || reducedMotionMediaQuery.matches) {
+        if (hasActivatedExpertiseTitle || shouldApplyExpertiseReducedMotionFallback()) {
             return;
         }
 
@@ -728,7 +736,7 @@ function initExpertiseReveal() {
     };
 
     const queueTitleRevealCheck = () => {
-        if (titleRevealAnimationFrameId || hasActivatedExpertiseTitle || reducedMotionMediaQuery.matches) {
+        if (titleRevealAnimationFrameId || hasActivatedExpertiseTitle || shouldApplyExpertiseReducedMotionFallback()) {
             return;
         }
 
@@ -769,7 +777,7 @@ function initExpertiseReveal() {
     const runItemRevealCheck = () => {
         itemRevealAnimationFrameId = 0;
 
-        if (reducedMotionMediaQuery.matches || !pendingExpertiseItems.size) {
+        if (shouldApplyExpertiseReducedMotionFallback() || !pendingExpertiseItems.size) {
             return;
         }
 
@@ -781,7 +789,7 @@ function initExpertiseReveal() {
     };
 
     const queueItemRevealCheck = () => {
-        if (itemRevealAnimationFrameId || reducedMotionMediaQuery.matches || !pendingExpertiseItems.size) {
+        if (itemRevealAnimationFrameId || shouldApplyExpertiseReducedMotionFallback() || !pendingExpertiseItems.size) {
             return;
         }
 
@@ -835,7 +843,7 @@ function initExpertiseReveal() {
             return;
         }
 
-        if (reducedMotionMediaQuery.matches) {
+        if (shouldApplyExpertiseReducedMotionFallback()) {
             applyExpertiseSettledState(true);
             return;
         }
@@ -845,7 +853,7 @@ function initExpertiseReveal() {
     };
 
     const handleReducedMotionChange = () => {
-        if (reducedMotionMediaQuery.matches) {
+        if (shouldApplyExpertiseReducedMotionFallback()) {
             applyExpertiseSettledState(isExpertiseInView);
             return;
         }
@@ -865,7 +873,7 @@ function initExpertiseReveal() {
 
         const shouldPreserveInView = isExpertiseInView || getIsElementInViewport(expertiseSection);
 
-        if (reducedMotionMediaQuery.matches) {
+        if (shouldApplyExpertiseReducedMotionFallback()) {
             applyExpertiseSettledState(shouldPreserveInView);
             return;
         }
@@ -907,7 +915,7 @@ function initExpertiseReveal() {
             threshold: EXPERTISE_SECTION_THRESHOLD,
         });
         expertiseSectionObserver.observe(expertiseSection);
-    } else if (reducedMotionMediaQuery.matches) {
+    } else if (shouldApplyExpertiseReducedMotionFallback()) {
         applyExpertiseSettledState(isExpertiseInView);
     } else {
         activateExpertiseTitleReveal();
@@ -915,7 +923,7 @@ function initExpertiseReveal() {
         expertiseSection.classList.add('is-expertise-reveal-complete');
     }
 
-    if (reducedMotionMediaQuery.matches) {
+    if (shouldApplyExpertiseReducedMotionFallback()) {
         applyExpertiseSettledState(isExpertiseInView);
     }
 
@@ -968,6 +976,7 @@ function initWorksHeadingReveal() {
     }
 
     const reducedMotionMediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const worksRevealCoarsePointerMediaQuery = window.matchMedia('(pointer: coarse)');
     const WORKS_SECTION_THRESHOLD = 0.08;
     const WORKS_TITLE_ZONE_TOP_RATIO_DESKTOP = 0.66;
     const WORKS_TITLE_ZONE_BOTTOM_RATIO_DESKTOP = 0.74;
@@ -980,6 +989,9 @@ function initWorksHeadingReveal() {
     let worksTitleRevealAnimationFrameId = 0;
     let isWorksTitleRevealEventsBound = false;
     const pendingWorksTitles = new Set(worksTitles);
+    const shouldApplyWorksReducedMotionFallback = () => {
+        return reducedMotionMediaQuery.matches && !worksRevealCoarsePointerMediaQuery.matches;
+    };
 
     const isScrollableOverflowValue = (overflowValue) => /(auto|scroll|overlay)/.test(overflowValue);
 
@@ -1079,7 +1091,7 @@ function initWorksHeadingReveal() {
     };
 
     const ensureWorksPrehiddenState = () => {
-        if (reducedMotionMediaQuery.matches) {
+        if (shouldApplyWorksReducedMotionFallback()) {
             return;
         }
 
@@ -1107,7 +1119,7 @@ function initWorksHeadingReveal() {
     const runWorksTitleRevealCheck = () => {
         worksTitleRevealAnimationFrameId = 0;
 
-        if (reducedMotionMediaQuery.matches || !pendingWorksTitles.size) {
+        if (shouldApplyWorksReducedMotionFallback() || !pendingWorksTitles.size) {
             return;
         }
 
@@ -1119,7 +1131,7 @@ function initWorksHeadingReveal() {
     };
 
     const queueWorksTitleRevealCheck = () => {
-        if (worksTitleRevealAnimationFrameId || reducedMotionMediaQuery.matches || !pendingWorksTitles.size) {
+        if (worksTitleRevealAnimationFrameId || shouldApplyWorksReducedMotionFallback() || !pendingWorksTitles.size) {
             return;
         }
 
@@ -1172,7 +1184,7 @@ function initWorksHeadingReveal() {
             return;
         }
 
-        if (reducedMotionMediaQuery.matches) {
+        if (shouldApplyWorksReducedMotionFallback()) {
             applyWorksSettledState(true);
             return;
         }
@@ -1181,7 +1193,7 @@ function initWorksHeadingReveal() {
     };
 
     const handleReducedMotionChange = () => {
-        if (reducedMotionMediaQuery.matches) {
+        if (shouldApplyWorksReducedMotionFallback()) {
             applyWorksSettledState(isWorksInView);
             return;
         }
@@ -1198,7 +1210,7 @@ function initWorksHeadingReveal() {
 
         const shouldPreserveInView = isWorksInView || getIsElementInViewport(worksSection);
 
-        if (reducedMotionMediaQuery.matches) {
+        if (shouldApplyWorksReducedMotionFallback()) {
             applyWorksSettledState(shouldPreserveInView);
             return;
         }
@@ -1227,14 +1239,14 @@ function initWorksHeadingReveal() {
             threshold: WORKS_SECTION_THRESHOLD,
         });
         worksSectionObserver.observe(worksSection);
-    } else if (reducedMotionMediaQuery.matches) {
+    } else if (shouldApplyWorksReducedMotionFallback()) {
         applyWorksSettledState(isWorksInView);
     } else {
         revealAllWorksTitles();
         worksSection.classList.add('is-works-reveal-complete');
     }
 
-    if (reducedMotionMediaQuery.matches) {
+    if (shouldApplyWorksReducedMotionFallback()) {
         applyWorksSettledState(isWorksInView);
     }
 
