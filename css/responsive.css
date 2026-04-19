@@ -195,7 +195,7 @@
 
     #intro {
         --intro-scroll-track-height: 320svh;
-        background-image: url('../assets/img/introduction_bg.jpg');
+        background-image: url('../assets/img/introduction_bg.png');
         background-repeat: no-repeat;
         background-position: center;
         background-size: cover;
@@ -571,7 +571,7 @@
 
     #intro {
         --intro-scroll-track-height: 300svh;
-        background-image: url('../assets/img/introduction_bg.jpg');
+        background-image: url('../assets/img/introduction_bg.png');
         background-repeat: no-repeat;
         background-position: center;
         background-size: cover;
