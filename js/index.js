@@ -2312,8 +2312,14 @@ function initSectionScrollHandoff() {
             return null;
         }
 
-        if (hrefValue === '#contact' && footerSection) {
-            return Math.round(Math.max(0, getSectionPageTop(footerSection) - normalizedOffsetTop));
+        if (hrefValue === '#contact') {
+            const contactTargetElement = document.querySelector('#contact') || footerSection;
+
+            if (!contactTargetElement) {
+                return null;
+            }
+
+            return Math.round(Math.max(0, getSectionPageTop(contactTargetElement) - normalizedOffsetTop));
         }
 
         const targetElement = document.querySelector(hrefValue);
@@ -2385,8 +2391,8 @@ function initSectionScrollHandoff() {
             return;
         }
 
-        const targetElement = hrefValue === '#contact' && footerSection
-            ? footerSection
+        const targetElement = hrefValue === '#contact'
+            ? (document.querySelector('#contact') || footerSection)
             : document.querySelector(hrefValue);
 
         if (!targetElement) {
