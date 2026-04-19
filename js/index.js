@@ -38,12 +38,16 @@ function initHeroReveal() {
     const heroTitleLines = heroTitle.querySelectorAll(':scope > span');
     const heroBottomItems = heroSection.querySelectorAll('.btm-contents .video-placeholder, .btm-contents .hero-copy');
     const reducedMotionMediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const heroRevealCoarsePointerMediaQuery = window.matchMedia('(pointer: coarse)');
     const HERO_INTRO_COMPLETE_FALLBACK_MS = 1700;
     const HERO_INVIEW_THRESHOLD = 0.25;
     let introCompleteTimer = null;
     let hasPlayedHeroIntro = false;
     let isHeroInView = false;
     let heroInViewObserver = null;
+    const shouldApplyHeroReducedMotionFallback = () => {
+        return reducedMotionMediaQuery.matches && !heroRevealCoarsePointerMediaQuery.matches;
+    };
 
     const applySequentialIndexVariable = (elements, variableName) => {
         elements.forEach((element, index) => {
@@ -126,7 +130,7 @@ function initHeroReveal() {
             return;
         }
 
-        if (reducedMotionMediaQuery.matches) {
+        if (shouldApplyHeroReducedMotionFallback()) {
             applyReducedMotionState(true);
             return;
         }
@@ -140,7 +144,7 @@ function initHeroReveal() {
     };
 
     const handleReducedMotionChange = () => {
-        if (reducedMotionMediaQuery.matches) {
+        if (shouldApplyHeroReducedMotionFallback()) {
             applyReducedMotionState(isHeroInView);
             return;
         }
@@ -162,7 +166,7 @@ function initHeroReveal() {
 
         const shouldPreserveInView = isHeroInView || getIsHeroInViewport();
 
-        if (reducedMotionMediaQuery.matches) {
+        if (shouldApplyHeroReducedMotionFallback()) {
             applyReducedMotionState(shouldPreserveInView);
             return;
         }
@@ -204,12 +208,12 @@ function initHeroReveal() {
         });
 
         heroInViewObserver.observe(heroSection);
-    } else if (!reducedMotionMediaQuery.matches) {
+    } else if (!shouldApplyHeroReducedMotionFallback()) {
         // 구형 브라우저 폴백: observer 미지원 시 초기 진입에서만 1회 재생한다.
         playHeroRevealOnce();
     }
 
-    if (reducedMotionMediaQuery.matches) {
+    if (shouldApplyHeroReducedMotionFallback()) {
         applyReducedMotionState(isHeroInView);
     }
 
