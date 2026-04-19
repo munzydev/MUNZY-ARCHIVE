@@ -685,7 +685,7 @@
 
 }
 
-@media (prefers-reduced-motion: reduce) and (pointer: fine) {
+@media (prefers-reduced-motion: reduce) and (pointer: fine) and (min-width: 1280px) {
 
     /*
      * 2번 이슈 대응:

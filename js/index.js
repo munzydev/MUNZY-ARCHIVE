@@ -39,6 +39,7 @@ function initHeroReveal() {
     const heroBottomItems = heroSection.querySelectorAll('.btm-contents .video-placeholder, .btm-contents .hero-copy');
     const reducedMotionMediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
     const heroRevealCoarsePointerMediaQuery = window.matchMedia('(pointer: coarse)');
+    const heroRevealParityViewportMediaQuery = window.matchMedia('(max-width: 1279px)');
     const HERO_INTRO_COMPLETE_FALLBACK_MS = 1700;
     const HERO_INVIEW_THRESHOLD = 0.25;
     let introCompleteTimer = null;
@@ -46,7 +47,9 @@ function initHeroReveal() {
     let isHeroInView = false;
     let heroInViewObserver = null;
     const shouldApplyHeroReducedMotionFallback = () => {
-        return reducedMotionMediaQuery.matches && !heroRevealCoarsePointerMediaQuery.matches;
+        return reducedMotionMediaQuery.matches
+            && !heroRevealParityViewportMediaQuery.matches
+            && !heroRevealCoarsePointerMediaQuery.matches;
     };
 
     const applySequentialIndexVariable = (elements, variableName) => {
@@ -263,6 +266,7 @@ function initIntroReveal() {
     const reducedMotionMediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
     const introRevealCoarsePointerMediaQuery = window.matchMedia('(pointer: coarse)');
     const introRevealHoverMediaQuery = window.matchMedia('(hover: hover)');
+    const introRevealParityViewportMediaQuery = window.matchMedia('(max-width: 1279px)');
     const INTRO_REVEAL_COMPLETE_FALLBACK_MS = 1800;
     const INTRO_INVIEW_THRESHOLD = 0.12;
     const INTRO_PREHIDDEN_CLASS = 'is-intro-prehidden';
@@ -272,6 +276,7 @@ function initIntroReveal() {
     let introInViewObserver = null;
     const shouldApplyIntroReducedMotionFallback = () => {
         return reducedMotionMediaQuery.matches
+            && !introRevealParityViewportMediaQuery.matches
             && !introRevealCoarsePointerMediaQuery.matches
             && !introRevealHoverMediaQuery.matches;
     };
@@ -521,6 +526,7 @@ function initExpertiseReveal() {
 
     const reducedMotionMediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
     const expertiseRevealCoarsePointerMediaQuery = window.matchMedia('(pointer: coarse)');
+    const expertiseRevealParityViewportMediaQuery = window.matchMedia('(max-width: 1279px)');
     const EXPERTISE_SECTION_THRESHOLD = 0.12;
     const EXPERTISE_TITLE_ZONE_TOP_RATIO_DESKTOP = 0.79;
     const EXPERTISE_TITLE_ZONE_BOTTOM_RATIO_DESKTOP = 0.85;
@@ -543,7 +549,9 @@ function initExpertiseReveal() {
     let isItemRevealEventsBound = false;
     const pendingExpertiseItems = new Set(expertiseItems);
     const shouldApplyExpertiseReducedMotionFallback = () => {
-        return reducedMotionMediaQuery.matches && !expertiseRevealCoarsePointerMediaQuery.matches;
+        return reducedMotionMediaQuery.matches
+            && !expertiseRevealParityViewportMediaQuery.matches
+            && !expertiseRevealCoarsePointerMediaQuery.matches;
     };
 
     const getIsElementInViewport = (element) => {
@@ -998,6 +1006,7 @@ function initWorksHeadingReveal() {
 
     const reducedMotionMediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
     const worksRevealCoarsePointerMediaQuery = window.matchMedia('(pointer: coarse)');
+    const worksRevealParityViewportMediaQuery = window.matchMedia('(max-width: 1279px)');
     const WORKS_SECTION_THRESHOLD = 0.08;
     const WORKS_TITLE_ZONE_TOP_RATIO_DESKTOP = 0.66;
     const WORKS_TITLE_ZONE_BOTTOM_RATIO_DESKTOP = 0.74;
@@ -1011,7 +1020,9 @@ function initWorksHeadingReveal() {
     let isWorksTitleRevealEventsBound = false;
     const pendingWorksTitles = new Set(worksTitles);
     const shouldApplyWorksReducedMotionFallback = () => {
-        return reducedMotionMediaQuery.matches && !worksRevealCoarsePointerMediaQuery.matches;
+        return reducedMotionMediaQuery.matches
+            && !worksRevealParityViewportMediaQuery.matches
+            && !worksRevealCoarsePointerMediaQuery.matches;
     };
 
     const isScrollableOverflowValue = (overflowValue) => /(auto|scroll|overlay)/.test(overflowValue);
