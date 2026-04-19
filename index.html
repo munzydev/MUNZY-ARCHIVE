@@ -102,7 +102,7 @@
 
     <main id="hero" class="hero">
         <!-- 배경 비디오 추가 (소리 끔, 자동/반복 재생) -->
-        <video class="hero-bg-video" src="./assets/video/hero_bg_video.webm" autoplay loop muted playsinline
+        <video class="hero-bg-video" src="./assets/video/hero_bg_video.webm" autoplay loop muted playsinline preload="metadata"
             poster="assets/img/hero_bg-video-poster.jpg" aria-hidden="true"></video>
 
         <!-- 모바일에서는 hero-nav 안보이게 할 예정 -->
@@ -132,7 +132,7 @@
 
             <div class="btm-contents">
                 <div class="video-placeholder">
-                    <video class="hero-video" src="./assets/video/hero_sm-video.webm" autoplay muted loop playsinline
+                    <video class="hero-video" src="./assets/video/hero_sm-video.webm" autoplay muted loop playsinline preload="metadata"
                         poster="assets/img/hero_sm-video-poster.png">
                     </video>
                 </div>
@@ -160,8 +160,8 @@
             </h2>
 
             <div class="placeholder-wrap">
-                <div class="img-placeholder"><img src="assets/img/introduction_icecream.png" alt="인트로 비주얼 아이스크림 이미지"></div>
-                <div class="img-placeholder"><img src="assets/img/introduction_music.png" alt="인트로 비주얼 음악 감상 이미지"></div>
+                <div class="img-placeholder"><img src="assets/img/introduction_icecream.png" alt="인트로 비주얼 아이스크림 이미지" decoding="async"></div>
+                <div class="img-placeholder"><img src="assets/img/introduction_music.png" alt="인트로 비주얼 음악 감상 이미지" decoding="async"></div>
             </div>
 
             <div class="intro-copy">
@@ -236,7 +236,7 @@
             </div>
 
             <div class="img-placeholder">
-                <img src="assets/img/intenal-projects_img.jpg" alt="Internal Projects 대표 이미지">
+                <img src="assets/img/intenal-projects_img.jpg" alt="Internal Projects 대표 이미지" loading="lazy" decoding="async" fetchpriority="low">
             </div>
         </article>
 
@@ -253,7 +253,7 @@
             </div>
 
             <div class="img-placeholder">
-                <img src="assets/img/personal-projects_img.jpg" alt="Personal Projects 대표 이미지">
+                <img src="assets/img/personal-projects_img.jpg" alt="Personal Projects 대표 이미지" loading="lazy" decoding="async" fetchpriority="low">
             </div>
         </article>
     </section>
@@ -281,7 +281,7 @@
         </div>
 
         <div class="footer-wordmark">
-            <img src="assets/logo/color=lightgreen.svg" alt="MUNZY ARCHIVE 푸터 워드마크 로고">
+            <img src="assets/logo/color=lightgreen.svg" alt="MUNZY ARCHIVE 푸터 워드마크 로고" loading="lazy" decoding="async">
         </div>
     </footer>
 
@@ -305,7 +305,7 @@
                 </div>
                 <div class="contents-wrap">
                     <div class="img-placeholder">
-                        <img src="assets/img/intenal-projects/titan-station.jpg" alt="Titan Station 프로젝트 미리보기 이미지">
+                        <img src="assets/img/intenal-projects/titan-station.jpg" alt="Titan Station 프로젝트 미리보기 이미지" loading="lazy" decoding="async" fetchpriority="low">
                     </div>
                     <div class="copy-wrap">
                         <p class="des">
@@ -339,7 +339,7 @@
                 </div>
                 <div class="contents-wrap">
                     <div class="img-placeholder">
-                        <img src="assets/img/intenal-projects/raise-pet.jpg" alt="Raise Pet 프로젝트 미리보기 이미지">
+                        <img src="assets/img/intenal-projects/raise-pet.jpg" alt="Raise Pet 프로젝트 미리보기 이미지" loading="lazy" decoding="async" fetchpriority="low">
                     </div>
                     <div class="copy-wrap">
                         <p class="des">
@@ -367,7 +367,7 @@
                 </div>
                 <div class="contents-wrap">
                     <div class="img-placeholder">
-                        <img src="assets/img/intenal-projects/cjs&s-japan.jpg" alt="CJS&S JAPAN 프로젝트 미리보기 이미지">
+                        <img src="assets/img/intenal-projects/cjs&s-japan.jpg" alt="CJS&S JAPAN 프로젝트 미리보기 이미지" loading="lazy" decoding="async" fetchpriority="low">
                     </div>
                     <div class="copy-wrap">
                         <p class="des">
@@ -395,7 +395,7 @@
                 </div>
                 <div class="contents-wrap">
                     <div class="img-placeholder">
-                        <img src="assets/img/intenal-projects/nexa-core.jpg" alt="NexaCore 프로젝트 미리보기 이미지">
+                        <img src="assets/img/intenal-projects/nexa-core.jpg" alt="NexaCore 프로젝트 미리보기 이미지" loading="lazy" decoding="async" fetchpriority="low">
                     </div>
                     <div class="copy-wrap">
                         <p class="des">
@@ -440,7 +440,7 @@
                 </div>
                 <div class="contents-wrap">
                     <div class="img-placeholder">
-                        <img src="assets/img/personal-projects/munzy-archive.png" alt="MUNZY ARCHIVE 프로젝트 미리보기 이미지">
+                        <img src="assets/img/personal-projects/munzy-archive.png" alt="MUNZY ARCHIVE 프로젝트 미리보기 이미지" loading="lazy" decoding="async" fetchpriority="low">
                     </div>
                     <div class="copy-wrap">
                         <p class="des">
@@ -468,7 +468,7 @@
                 </div>
                 <div class="contents-wrap">
                     <div class="img-placeholder">
-                        <img src="assets/img/personal-projects/kc.png" alt="KC 프로젝트 준비중 미리보기 이미지">
+                        <img src="assets/img/personal-projects/kc.png" alt="KC 프로젝트 준비중 미리보기 이미지" loading="lazy" decoding="async" fetchpriority="low">
                     </div>
                     <div class="copy-wrap">
                         <p class="des">

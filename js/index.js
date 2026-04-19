@@ -1302,10 +1302,12 @@ function initIntroImageScrollSwap() {
     const INTRO_SCROLL_PROGRESS_POWER = 1.45;
     const INTRO_SCROLL_EASE_BLEND = 0.82;
     const INTRO_SCROLL_LINEAR_RESPONSE_WEIGHT = 0.3;
-    const INTRO_VISUAL_LERP_FACTOR = 0.13;
+    const INTRO_VISUAL_LERP_FACTOR_DESKTOP = 0.13;
+    const INTRO_VISUAL_LERP_FACTOR_TOUCH = 0.2;
     const INTRO_VISUAL_SETTLE_EPSILON = 0.00035;
     const INTRO_VISUAL_COMPLETE_THRESHOLD = 0.9965;
     const INTRO_RAW_COMPLETE_THRESHOLD = 0.999;
+    const INTRO_ACTIVE_VIEWPORT_MARGIN_RATIO = 0.45;
 
     if (!introSection || introImages.length < 2) {
         return;
@@ -1313,6 +1315,7 @@ function initIntroImageScrollSwap() {
 
     const reducedMotionMediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
     const introScrollSwapForceMediaQuery = window.matchMedia('(max-width: 1279px)');
+    const introCoarsePointerMediaQuery = window.matchMedia('(pointer: coarse)');
     let isScrollTicking = false;
     let isScrollSwapEventsBound = false;
     let visualIntroProgress = 0;
@@ -1360,17 +1363,45 @@ function initIntroImageScrollSwap() {
         return window.scrollY || window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0;
     };
 
+    const getViewportHeight = () => {
+        return window.innerHeight || document.documentElement.clientHeight || 1;
+    };
+
     const getIntroPageTop = () => {
         const currentScrollTop = getPageScrollTop();
         return introSection.getBoundingClientRect().top + currentScrollTop;
     };
 
     const getIntroRawScrollProgress = () => {
-        const viewportHeight = window.innerHeight || document.documentElement.clientHeight || 1;
+        const viewportHeight = getViewportHeight();
         const introScrollDistance = Math.max(introSection.offsetHeight - viewportHeight, 1);
         const introProgressedDistance = getPageScrollTop() - getIntroPageTop();
         const normalizedDistance = Math.min(introScrollDistance, Math.max(0, introProgressedDistance));
         return clampProgress(normalizedDistance / introScrollDistance);
+    };
+
+    const getIntroViewportZoneState = () => {
+        const introRect = introSection.getBoundingClientRect();
+        const viewportHeight = getViewportHeight();
+        const activeMargin = viewportHeight * INTRO_ACTIVE_VIEWPORT_MARGIN_RATIO;
+        const isFarBelowViewport = introRect.top >= viewportHeight + activeMargin;
+        const isFarAboveViewport = introRect.bottom <= -activeMargin;
+
+        if (isFarBelowViewport) {
+            return 'below';
+        }
+
+        if (isFarAboveViewport) {
+            return 'above';
+        }
+
+        return 'near';
+    };
+
+    const getIntroVisualLerpFactor = () => {
+        return introCoarsePointerMediaQuery.matches
+            ? INTRO_VISUAL_LERP_FACTOR_TOUCH
+            : INTRO_VISUAL_LERP_FACTOR_DESKTOP;
     };
 
     const applyScrollProgress = (visualProgress, rawProgress) => {
@@ -1401,7 +1432,7 @@ function initIntroImageScrollSwap() {
         progressAnimationFrameId = requestAnimationFrame(() => {
             progressAnimationFrameId = 0;
             const delta = targetIntroProgress - visualIntroProgress;
-            const nextProgress = visualIntroProgress + delta * INTRO_VISUAL_LERP_FACTOR;
+            const nextProgress = visualIntroProgress + delta * getIntroVisualLerpFactor();
             const isSettled = Math.abs(delta) <= INTRO_VISUAL_SETTLE_EPSILON;
             visualIntroProgress = isSettled ? targetIntroProgress : clampProgress(nextProgress);
             applyScrollProgress(visualIntroProgress, latestRawIntroProgress);
@@ -1413,6 +1444,26 @@ function initIntroImageScrollSwap() {
     };
 
     const updateProgressTarget = () => {
+        const introViewportZoneState = getIntroViewportZoneState();
+
+        if (introViewportZoneState === 'below') {
+            cancelVisualProgressAnimation();
+            latestRawIntroProgress = 0;
+            targetIntroProgress = 0;
+            visualIntroProgress = 0;
+            applyScrollProgress(0, 0);
+            return;
+        }
+
+        if (introViewportZoneState === 'above') {
+            cancelVisualProgressAnimation();
+            latestRawIntroProgress = 1;
+            targetIntroProgress = 1;
+            visualIntroProgress = 1;
+            applyScrollProgress(1, 1);
+            return;
+        }
+
         latestRawIntroProgress = getIntroRawScrollProgress();
         targetIntroProgress = mapToSmoothedScrollProgress(latestRawIntroProgress);
         queueVisualProgressAnimation();

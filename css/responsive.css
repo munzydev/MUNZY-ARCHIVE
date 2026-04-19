@@ -195,6 +195,10 @@
 
     #intro {
         --intro-scroll-track-height: 320svh;
+        background-image: url('../assets/img/introduction_bg.jpg');
+        background-repeat: no-repeat;
+        background-position: center;
+        background-size: cover;
     }
 
     #intro .wrapper {
@@ -567,6 +571,10 @@
 
     #intro {
         --intro-scroll-track-height: 300svh;
+        background-image: url('../assets/img/introduction_bg.jpg');
+        background-repeat: no-repeat;
+        background-position: center;
+        background-size: cover;
     }
 
     #intro .wrapper {
