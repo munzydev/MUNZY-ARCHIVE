@@ -679,12 +679,12 @@
 
 @media (prefers-reduced-motion: reduce) {
 
-    .global-header .btn-menu-toggle .icon-wrapper::before,
-    .global-header .btn-menu-toggle .icon-wrapper::after,
-    .global-header .btn-menu-toggle .icon-wrapper .line,
-    .global-header .header-secondary,
-    .global-header .header-secondary li a,
-    .global-header .header-primary .site-logo,
+    /*
+     * 2번 이슈 대응:
+     * 헤더 메뉴(햄버거/서브메뉴/로고)는 reduce 모드에서도 짧은 전환을 유지해
+     * 실기기에서 즉시 점프처럼 보이지 않도록 한다.
+     * (헤더 관련 셀렉터는 transition: none 대상에서 제외)
+     */
     #hero.is-hero-reveal-ready .hero-title span,
     #hero.is-hero-reveal-ready .btm-contents .video-placeholder,
     #hero.is-hero-reveal-ready .btm-contents .hero-copy,
